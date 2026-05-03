@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLogin, getGetCurrentUserQueryKey } from "@workspace/api-client-react";
+import { API_BASE } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,21 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [remember, setRemember] = useState(true);
   const login = useLogin();
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  async function tryDemo() {
+    setDemoLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/auth/demo`, { method: "POST", credentials: "include" });
+      if (!res.ok) throw new Error(`Demo failed (${res.status})`);
+      await qc.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Demo failed");
+    } finally {
+      setDemoLoading(false);
+    }
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -111,14 +127,12 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               className="w-full h-11"
-              onClick={() => {
-                setEmail("demo@school.uk");
-                setName("Demo Teacher");
-              }}
+              onClick={tryDemo}
+              disabled={demoLoading}
               data-testid="button-preview"
             >
               <PlayCircle className="w-4 h-4 mr-2" />
-              Try a demo
+              {demoLoading ? "Loading demo…" : "Try a demo"}
             </Button>
 
             <p className="text-sm text-center text-muted-foreground pt-1">
