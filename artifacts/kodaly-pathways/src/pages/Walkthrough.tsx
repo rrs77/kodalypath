@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { VideoExplainer } from "@/components/VideoExplainer";
 import {
   Music, ArrowLeft, ArrowRight, LayoutDashboard, GraduationCap, Map, Library,
-  Hammer, CalendarDays, FolderOpen, Presentation, Youtube, ShieldCheck, Sparkles,
+  Hammer, CalendarDays, FolderOpen, Presentation, Youtube, ShieldCheck, Sparkles, PlayCircle,
 } from "lucide-react";
 
 const FEATURES = [
@@ -74,6 +76,7 @@ const STEPS = [
 ];
 
 export default function WalkthroughPage() {
+  const [explainerOpen, setExplainerOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar */}
@@ -121,11 +124,15 @@ export default function WalkthroughPage() {
                 Sign in to get started <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Link>
-            <a href="#features">
-              <Button size="lg" variant="outline" className="bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white">
-                See features
-              </Button>
-            </a>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => setExplainerOpen(true)}
+              className="bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white"
+              data-testid="button-video-explainer"
+            >
+              <PlayCircle className="w-4 h-4 mr-2" /> Video explainer
+            </Button>
           </div>
         </div>
       </section>
@@ -190,9 +197,11 @@ export default function WalkthroughPage() {
           </Link>
         </div>
         <p className="mt-6 text-xs text-muted-foreground inline-flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Secure cookie session, GDPR-friendly
+          <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Secure cookie session, GDPR-friendly · all PII encrypted at rest
         </p>
       </section>
+
+      <VideoExplainer open={explainerOpen} onClose={() => setExplainerOpen(false)} />
     </div>
   );
 }
