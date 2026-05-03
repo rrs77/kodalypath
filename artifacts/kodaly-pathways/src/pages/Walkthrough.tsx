@@ -90,11 +90,11 @@ export default function WalkthroughPage() {
               Kodály<span className="italic text-primary"> Pathways</span>
             </span>
           </div>
-          <Link href="/login">
-            <Button variant="ghost" size="sm" data-testid="link-back-login">
+          <Button asChild variant="ghost" size="sm" data-testid="link-back-login">
+            <Link href="/login">
               <ArrowLeft className="w-4 h-4 mr-1" /> Back to sign in
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </header>
 
@@ -119,11 +119,11 @@ export default function WalkthroughPage() {
             A complete planner for UK music teachers — EYFS through KS4. Built around the Kodály method, with a ready-made activity library and YouTube-linked singing games.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/login">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-white/90 border-0" data-testid="button-cta-signin">
+            <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-white/90 border-0" data-testid="button-cta-signin">
+              <Link href="/login">
                 Sign in to get started <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Button
               size="lg"
               variant="outline"
@@ -185,16 +185,17 @@ export default function WalkthroughPage() {
         <h2 className="text-3xl font-bold tracking-tight">Ready to plan your next lesson?</h2>
         <p className="text-muted-foreground mt-3">No password to remember — your account is created on first sign in.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/login">
-            <Button
-              size="lg"
-              className="text-white border-0"
-              style={{ background: "linear-gradient(90deg, hsl(174 55% 35%), hsl(160 50% 40%))" }}
-              data-testid="button-cta-final"
-            >
+          <Button
+            asChild
+            size="lg"
+            className="text-white border-0"
+            style={{ background: "linear-gradient(90deg, hsl(174 55% 35%), hsl(160 50% 40%))" }}
+            data-testid="button-cta-final"
+          >
+            <Link href="/login">
               Sign in <ArrowRight className="w-4 h-4 ml-1" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
         <p className="mt-6 text-xs text-muted-foreground inline-flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-primary" /> Secure cookie session, GDPR-friendly · all PII encrypted at rest

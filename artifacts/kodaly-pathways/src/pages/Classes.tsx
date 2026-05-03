@@ -55,8 +55,19 @@ export default function ClassesPage() {
         </Dialog>
       </div>
 
-      {isLoading ? <p className="text-muted-foreground">Loading…</p> : null}
-      {!isLoading && classes.length === 0 && <p className="text-muted-foreground">No classes yet — add your first one.</p>}
+      {isLoading && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-24 rounded-lg bg-muted/60 animate-pulse" />)}
+        </div>
+      )}
+      {!isLoading && classes.length === 0 && (
+        <div className="kp-empty" data-testid="empty-classes">
+          <GraduationCap />
+          <p className="font-medium">No classes yet</p>
+          <p className="text-sm text-muted-foreground mt-1 max-w-xs">Add the groups you teach so lessons and the calendar can be tied to them.</p>
+          <Button className="mt-4" onClick={() => { setEditing(null); setOpen(true); }}><Plus className="w-4 h-4 mr-1" /> Add your first class</Button>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {classes.map((c) => (
@@ -68,8 +79,8 @@ export default function ClassesPage() {
                   <div className="text-xs text-muted-foreground">{c.keyStage} · {c.yearGroup}</div>
                 </div>
                 <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => { setEditing(c); setOpen(true); }} data-testid={`button-edit-class-${c.id}`}><Pencil className="w-4 h-4" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => {
+                  <Button size="icon" variant="ghost" aria-label={`Edit ${c.name}`} onClick={() => { setEditing(c); setOpen(true); }} data-testid={`button-edit-class-${c.id}`}><Pencil className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" aria-label={`Delete ${c.name}`} onClick={() => {
                     if (confirm(`Delete ${c.name}?`)) {
                       del.mutate({ id: c.id }, { onSuccess: () => { refresh(); toast.success("Class deleted"); } });
                     }

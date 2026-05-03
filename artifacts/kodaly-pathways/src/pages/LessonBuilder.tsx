@@ -29,6 +29,7 @@ export default function LessonBuilderPage() {
   const del = useDeleteLesson();
   function refresh() { qc.invalidateQueries({ queryKey: getListLessonsQueryKey() }); }
 
+  const [tab, setTab] = useState("generate");
   const [g, setG] = useState({
     yearGroup: "Year 4",
     keyStage: "KS2",
@@ -63,7 +64,7 @@ export default function LessonBuilderPage() {
           <p className="text-muted-foreground text-sm mt-0.5">Generate a Kodály lesson plan or browse what you've built.</p>
         </div>
       </div>
-      <Tabs defaultValue="generate">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="generate" data-testid="tab-generate"><Sparkles className="w-4 h-4 mr-1" />Generate</TabsTrigger>
           <TabsTrigger value="browse" data-testid="tab-browse">Browse all</TabsTrigger>
@@ -107,8 +108,19 @@ export default function LessonBuilderPage() {
           </Card>
         </TabsContent>
         <TabsContent value="browse" className="mt-4 space-y-2">
-          {isLoading && <p className="text-muted-foreground">Loading…</p>}
-          {!isLoading && lessons.length === 0 && <p className="text-muted-foreground">No lessons yet — try the Generate tab.</p>}
+          {isLoading && (
+            <div className="space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-20 rounded-lg bg-muted/60 animate-pulse" />)}
+            </div>
+          )}
+          {!isLoading && lessons.length === 0 && (
+            <div className="kp-empty" data-testid="empty-lessons">
+              <NotebookPen />
+              <p className="font-medium">No lessons yet</p>
+              <p className="text-sm text-muted-foreground mt-1 max-w-xs">Generate your first plan and we'll fill in objectives, vocabulary and activities.</p>
+              <Button className="mt-4" onClick={() => setTab("generate")} data-testid="button-empty-generate"><Sparkles className="w-4 h-4 mr-1" /> Generate a lesson</Button>
+            </div>
+          )}
           {lessons.map((l) => (
             <Card key={l.id} data-testid={`card-lesson-${l.id}`}>
               <CardContent className="p-4 flex items-start justify-between gap-3">
@@ -118,10 +130,10 @@ export default function LessonBuilderPage() {
                   {l.kodalyFocus && <Badge variant="secondary" className="mt-1">{l.kodalyFocus}</Badge>}
                 </div>
                 <div className="flex gap-1">
-                  <Link href={`/lessons/${l.id}`}><Button size="sm" variant="outline"><Pencil className="w-4 h-4 mr-1" /> Edit</Button></Link>
+                  <Button asChild size="sm" variant="outline"><Link href={`/lessons/${l.id}`}><Pencil className="w-4 h-4 mr-1" /> Edit</Link></Button>
                   <Button size="sm" variant="outline" onClick={() => dup.mutate({ id: l.id, data: {} }, { onSuccess: () => { refresh(); toast.success("Duplicated"); } })}><Copy className="w-4 h-4 mr-1" /> Duplicate</Button>
                   <Button size="sm" variant="outline" onClick={() => window.open(`${API_BASE}/lessons/${l.id}/pdf`, "_blank")}><FileText className="w-4 h-4 mr-1" /> PDF</Button>
-                  <Button size="sm" variant="ghost" onClick={() => { if (confirm(`Delete ${l.title}?`)) del.mutate({ id: l.id }, { onSuccess: () => { refresh(); toast.success("Deleted"); } }); }}><Trash2 className="w-4 h-4" /></Button>
+                  <Button size="sm" variant="ghost" aria-label={`Delete ${l.title}`} onClick={() => { if (confirm(`Delete ${l.title}?`)) del.mutate({ id: l.id }, { onSuccess: () => { refresh(); toast.success("Deleted"); } }); }}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </CardContent>
             </Card>

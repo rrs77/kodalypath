@@ -22,7 +22,7 @@ const NONE = "__none__";
 
 export default function CalendarPage() {
   const qc = useQueryClient();
-  const { data: entries = [] } = useListCalendarEntries();
+  const { data: entries = [], isLoading } = useListCalendarEntries();
   const { data: lessons = [] } = useListLessons();
   const { data: classes = [] } = useListClasses();
   const create = useCreateCalendarEntry();
@@ -87,6 +87,12 @@ export default function CalendarPage() {
           </Dialog>
         </div>
       </div>
+
+      {isLoading && (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
+          {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-32 rounded-lg bg-muted/60 animate-pulse" />)}
+        </div>
+      )}
 
       <Tabs value={activeTerm} onValueChange={setActiveTerm}>
         <TabsList>{TERMS.map((t) => <TabsTrigger key={t} value={t} data-testid={`tab-term-${t.replace(" ", "-")}`}>{t}</TabsTrigger>)}</TabsList>

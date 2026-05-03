@@ -68,7 +68,11 @@ export default function PathwayPage() {
         </Dialog>
       </div>
 
-      {isLoading ? <p className="text-muted-foreground">Loading…</p> : null}
+      {isLoading && (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-28 rounded-lg bg-muted/60 animate-pulse" />)}
+        </div>
+      )}
 
       <Tabs value={activeKs} onValueChange={setActiveKs}>
         <TabsList>
@@ -93,8 +97,8 @@ export default function PathwayPage() {
                         </div>
                         {it.isCustom && (
                           <div className="opacity-0 group-hover:opacity-100 flex gap-1">
-                            <Button size="icon" variant="ghost" onClick={() => { setEditing(it); setOpen(true); }}><Pencil className="w-3.5 h-3.5" /></Button>
-                            <Button size="icon" variant="ghost" onClick={() => {
+                            <Button size="icon" variant="ghost" aria-label={`Edit ${it.title}`} onClick={() => { setEditing(it); setOpen(true); }}><Pencil className="w-3.5 h-3.5" /></Button>
+                            <Button size="icon" variant="ghost" aria-label={`Delete ${it.title}`} onClick={() => {
                               if (confirm("Delete this step?")) del.mutate({ id: it.id }, { onSuccess: () => { refresh(); toast.success("Deleted"); } });
                             }}><Trash2 className="w-3.5 h-3.5" /></Button>
                           </div>

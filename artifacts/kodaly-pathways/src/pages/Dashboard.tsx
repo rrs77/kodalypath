@@ -48,9 +48,9 @@ export default function DashboardPage() {
             <p className="text-muted-foreground text-sm mt-0.5">Your Kodály planning at a glance.</p>
           </div>
         </div>
-        <Link href="/lesson-builder" data-testid="button-build-lesson">
-          <Button>Build a lesson</Button>
-        </Link>
+        <Button asChild data-testid="button-build-lesson">
+          <Link href="/lesson-builder">Build a lesson</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">

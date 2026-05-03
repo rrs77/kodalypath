@@ -89,12 +89,12 @@ export default function ActivitiesPage() {
       </div>
 
       <Card>
-        <CardContent className="p-4 grid md:grid-cols-5 gap-2">
-          <div className="md:col-span-2">
-            <Label className="text-xs">Search</Label>
+        <CardContent className="p-4 grid md:grid-cols-5 gap-3">
+          <div className="md:col-span-2 space-y-1.5">
+            <Label className="text-xs text-muted-foreground" htmlFor="activities-search">Search</Label>
             <div className="relative">
-              <Search className="w-4 h-4 absolute top-2.5 left-2 text-muted-foreground" />
-              <Input className="pl-8" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search title, focus, instructions" data-testid="input-search" />
+              <Search className="w-4 h-4 absolute top-1/2 -translate-y-1/2 left-2.5 text-muted-foreground pointer-events-none" />
+              <Input id="activities-search" className="pl-8" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search title, focus, instructions" data-testid="input-search" />
             </div>
           </div>
           <FilterSelect label="Key stage" value={keyStage} onChange={setKeyStage} options={KEY_STAGES} />
@@ -104,11 +104,25 @@ export default function ActivitiesPage() {
         </CardContent>
       </Card>
 
-      {isLoading ? <p className="text-muted-foreground">Loading…</p> : null}
-      {!isLoading && activities.length === 0 && <p className="text-muted-foreground">No activities match these filters.</p>}
+      {isLoading && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-36 rounded-lg bg-muted/60 animate-pulse" />)}
+        </div>
+      )}
+      {!isLoading && activities.length === 0 && (
+        <div className="kp-empty" data-testid="empty-activities">
+          <Library />
+          <p className="font-medium">No activities match these filters</p>
+          <p className="text-sm text-muted-foreground mt-1 max-w-sm">Try clearing a filter, or add a custom activity to your library.</p>
+          <div className="flex gap-2 mt-4">
+            <Button variant="outline" onClick={() => { setKeyStage(ANY); setActivityType(ANY); setDifficulty(ANY); setTerm(ANY); setSearch(""); }}>Clear filters</Button>
+            <Button onClick={() => { setEditing(null); setOpen(true); }}><Plus className="w-4 h-4 mr-1" /> Add activity</Button>
+          </div>
+        </div>
+      )}
 
       {!isLoading && activities.length > 0 && (
-        <p className="text-xs text-muted-foreground">{activities.length} {activities.length === 1 ? "activity" : "activities"}</p>
+        <p className="text-xs text-muted-foreground tabular-nums">{activities.length} {activities.length === 1 ? "activity" : "activities"}</p>
       )}
 
       {view === "cards" ? (
@@ -217,8 +231,8 @@ export default function ActivitiesPage() {
 
 function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: readonly string[] }) {
   return (
-    <div>
-      <Label className="text-xs">{label}</Label>
+    <div className="space-y-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger data-testid={`select-${label.toLowerCase().replace(" ","-")}`}><SelectValue /></SelectTrigger>
         <SelectContent>

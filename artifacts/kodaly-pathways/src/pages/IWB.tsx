@@ -21,10 +21,16 @@ import { RhythmGlyphSvg, RHYTHM_FLASHCARDS, type RhythmGlyph } from "@/component
 export default function IWBPage() {
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold flex items-center gap-2">
-        <Monitor className="w-6 h-6 text-primary" /> IWB Classroom Mode
-        <Badge variant="outline" className="ml-2">Project to your classroom display</Badge>
-      </h1>
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="kp-page-icon"><Monitor className="w-5 h-5" /></div>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+            IWB Classroom Mode
+            <Badge variant="outline" className="font-normal">Project to your display</Badge>
+          </h1>
+          <p className="text-muted-foreground text-sm mt-0.5">Front-of-class tools — present a lesson, flash rhythms, work the beat grid.</p>
+        </div>
+      </div>
       <Tabs defaultValue="player">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="player"><ListMusic className="w-4 h-4 mr-1.5" /> Lesson Player</TabsTrigger>

@@ -27,7 +27,18 @@ export default function LessonEditPage() {
   const [l, setL] = useState<Lesson | null>(null);
   useEffect(() => { if (serverLesson) setL(serverLesson); }, [serverLesson]);
 
-  if (isLoading || !l) return <p className="text-muted-foreground">Loading lesson…</p>;
+  if (isLoading || !l) {
+    return (
+      <div className="space-y-4">
+        <div className="h-9 w-40 rounded-md bg-muted/60 animate-pulse" />
+        <div className="h-32 rounded-lg bg-muted/60 animate-pulse" />
+        <div className="grid lg:grid-cols-2 gap-3">
+          <div className="h-72 rounded-lg bg-muted/60 animate-pulse" />
+          <div className="h-72 rounded-lg bg-muted/60 animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   const set = <K extends keyof Lesson>(k: K, v: Lesson[K]) => setL({ ...l, [k]: v });
   const setListField = (k: "canStatements" | "vocabulary" | "teacherQuestions" | "pupilResponses" | "resources") => (text: string) => set(k, text.split("\n").map((s) => s.trim()).filter(Boolean));
@@ -48,9 +59,15 @@ export default function LessonEditPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Link href="/lesson-builder"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> Back to lessons</Button></Link>
-        <div className="flex gap-2">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div className="min-w-0">
+          <Button asChild variant="ghost" size="sm" className="-ml-2 mb-1">
+            <Link href="/lesson-builder"><ArrowLeft className="w-4 h-4 mr-1" /> Back to lessons</Link>
+          </Button>
+          <h1 className="text-xl font-semibold tracking-tight truncate">{l.title || "Untitled lesson"}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">{l.keyStage} · {l.yearGroup} · {l.term || "Unscheduled"} · {l.lengthMinutes} min</p>
+        </div>
+        <div className="flex gap-2 shrink-0">
           <Button variant="outline" onClick={() => window.open(`${API_BASE}/lessons/${l.id}/pdf`, "_blank")} data-testid="button-pdf"><FileText className="w-4 h-4 mr-1" /> Download PDF</Button>
           <Button onClick={save} disabled={update.isPending} data-testid="button-save"><Save className="w-4 h-4 mr-1" /> {update.isPending ? "Saving…" : "Save"}</Button>
         </div>

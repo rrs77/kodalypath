@@ -19,7 +19,7 @@ import { toast } from "sonner";
 export default function ResourcesPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
-  const { data: resources = [] } = useListResources(search ? { search } : undefined);
+  const { data: resources = [], isLoading } = useListResources(search ? { search } : undefined);
   const create = useCreateResource();
   const update = useUpdateResource();
   const del = useDeleteResource();
@@ -66,7 +66,24 @@ export default function ResourcesPage() {
         </div>
       </CardContent></Card>
 
-      {resources.length === 0 && <p className="text-muted-foreground">No resources yet — add one or import a URL.</p>}
+      {isLoading && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-32 rounded-lg bg-muted/60 animate-pulse" />)}
+        </div>
+      )}
+      {!isLoading && resources.length === 0 && (
+        <div className="kp-empty" data-testid="empty-resources">
+          <Folder />
+          <p className="font-medium">{search ? "No matching resources" : "No resources yet"}</p>
+          <p className="text-sm text-muted-foreground mt-1 max-w-xs">{search ? "Try a different search term." : "Add a link manually, or import one from a URL — we'll fetch the title and metadata."}</p>
+          {!search && (
+            <div className="flex gap-2 mt-4">
+              <Button variant="outline" onClick={() => setImportOpen(true)}><Download className="w-4 h-4 mr-1" /> Import URL</Button>
+              <Button onClick={() => { setEditing(null); setOpen(true); }}><Plus className="w-4 h-4 mr-1" /> Add resource</Button>
+            </div>
+          )}
+        </div>
+      )}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {resources.map((r) => (
           <Card key={r.id} className="kp-card-hover" data-testid={`card-resource-${r.id}`}>
@@ -83,8 +100,8 @@ export default function ResourcesPage() {
               </div>
               {r.notes && <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-3">{r.notes}</p>}
               <div className="flex justify-end gap-1">
-                <Button size="icon" variant="ghost" onClick={() => { setEditing(r); setOpen(true); }}><Pencil className="w-4 h-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => { if (confirm(`Delete ${r.title}?`)) del.mutate({ id: r.id }, { onSuccess: () => { refresh(); toast.success("Deleted"); } }); }}><Trash2 className="w-4 h-4" /></Button>
+                <Button size="icon" variant="ghost" aria-label={`Edit ${r.title}`} onClick={() => { setEditing(r); setOpen(true); }}><Pencil className="w-4 h-4" /></Button>
+                <Button size="icon" variant="ghost" aria-label={`Delete ${r.title}`} onClick={() => { if (confirm(`Delete ${r.title}?`)) del.mutate({ id: r.id }, { onSuccess: () => { refresh(); toast.success("Deleted"); } }); }}><Trash2 className="w-4 h-4" /></Button>
               </div>
             </CardContent>
           </Card>

@@ -256,11 +256,11 @@ function OutroSlide({ title, blurb, onClose }: { title: string; blurb: string; o
         className="mt-4 text-lg text-white/80 max-w-xl">{blurb}</motion.p>
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }}
         className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/login">
-          <Button size="lg" onClick={onClose} className="bg-white text-slate-900 hover:bg-white/90 border-0">
+        <Button asChild size="lg" className="bg-white text-slate-900 hover:bg-white/90 border-0">
+          <Link href="/login" onClick={onClose}>
             Sign in to get started <ArrowRight className="w-4 h-4 ml-1" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <Button size="lg" variant="outline" onClick={onClose}
           className="bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white">
           Close
