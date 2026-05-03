@@ -23,6 +23,8 @@ import SettingsPage from "@/pages/Settings";
 import AdminPage from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 import { SiteSettingsProvider } from "@/lib/site-settings";
+import { MicrocopyProvider } from "@/lib/microcopy";
+import CmsPage from "@/pages/CmsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: false, refetchOnWindowFocus: false } },
@@ -178,18 +180,21 @@ function ClerkProviderWithRoutes() {
       <QueryClientProvider client={queryClient}>
         <ClerkQueryCacheInvalidator />
         <SiteSettingsProvider>
-          <TooltipProvider>
-            <Switch>
-              <Route path="/login" component={LoginPage} />
-              <Route path="/sign-in/*?" component={SignInPage} />
-              <Route path="/sign-up/*?" component={SignUpPage} />
-              <Route path="/walkthrough" component={WalkthroughPage} />
-              <Route path="/admin" component={AdminPage} />
-              <Route path="/admin/:rest*" component={AdminPage} />
-              <Route component={ProtectedRoutes} />
-            </Switch>
-            <SonnerToaster position="top-right" richColors />
-          </TooltipProvider>
+          <MicrocopyProvider>
+            <TooltipProvider>
+              <Switch>
+                <Route path="/login" component={LoginPage} />
+                <Route path="/sign-in/*?" component={SignInPage} />
+                <Route path="/sign-up/*?" component={SignUpPage} />
+                <Route path="/walkthrough" component={WalkthroughPage} />
+                <Route path="/admin" component={AdminPage} />
+                <Route path="/admin/:rest*" component={AdminPage} />
+                <Route path="/p/:slug" component={CmsPage} />
+                <Route component={ProtectedRoutes} />
+              </Switch>
+              <SonnerToaster position="top-right" richColors />
+            </TooltipProvider>
+          </MicrocopyProvider>
         </SiteSettingsProvider>
       </QueryClientProvider>
     </ClerkProvider>

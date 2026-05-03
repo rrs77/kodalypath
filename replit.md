@@ -18,7 +18,18 @@ Full-stack web app for UK music teachers (EYFS–KS4) to plan Kodály-method les
 `artifacts/api-server/build.mjs` externalises `pdfkit`, `fontkit`, `brotli` (PDF generation). Adding them to the bundle pulls in `@swc/helpers` cjs which fails at runtime.
 
 ## Routes (frontend)
-`/login`, `/dashboard`, `/classes`, `/pathway`, `/activities`, `/lesson-builder`, `/lessons/:id`, `/calendar`, `/resources`, `/iwb`, `/settings`. Wouter base = `import.meta.env.BASE_URL` so all paths are prefix-aware.
+`/login`, `/dashboard`, `/classes`, `/pathway`, `/activities`, `/lesson-builder`, `/lessons/:id`, `/calendar`, `/resources`, `/iwb`, `/settings`, `/walkthrough`, `/p/:slug` (public CMS page), `/admin/*` (CMS admin). Wouter base = `import.meta.env.BASE_URL` so all paths are prefix-aware.
+
+## CMS (Phases 1–3)
+A WordPress-style admin under `/admin` lets admins (`teachers.role = 'admin'`) edit branding, pages, microcopy, navigation, and media without code changes.
+- DB tables (in `lib/db/src/schema/index.ts`): `pages` (slug + JSONB `blocks` + `published`), `microcopy` (key/value/description), `nav_items` (location/label/href/sortOrder/visible), `media` (objectPath + alt + mime + size).
+- Public reads: `GET /api/pages/:slug`, `GET /api/microcopy` (returns map), `GET /api/nav` (returns groups). Admin CRUD lives under `/api/admin/*` and is gated by `requireAdmin` in `routes/index.ts`.
+- Block kinds rendered by `components/PageRenderer.tsx`: `hero`, `heading`, `richText`, `image`, `columns`, `cta`, `featureGrid`, `videoEmbed`, `spacer`. Unknown kinds are silently dropped so a stale schema can't crash a page.
+- `/walkthrough` now reads its blocks from the DB (seeded with the original 9-feature, 4-step content). `/p/:slug` lets admins create new public pages on the fly.
+- `AppLayout` consumes `GET /api/nav` for the primary sidebar with a hardcoded fallback so the app never breaks if the table is empty. Icons are mapped per-href in `ICON_BY_HREF`.
+- Microcopy is exposed via `MicrocopyProvider` + `useText(key, fallback)` from `src/lib/microcopy.tsx`.
+- Media uploads use Replit Object Storage. `POST /api/storage/uploads/request-url` returns a presigned PUT URL + `objectPath` (admin-only). After the browser PUTs the bytes, `POST /api/admin/media` registers the file. `objectAcl.ts` sets ACL on upload; `GET /api/storage/objects/*` streams private objects with `canAccessObject` enforcement.
+- Generated client hooks (e.g. `useListPages`, `useGetPageBySlug`, `useUpsertMicrocopy`, `useReorderNavItems`, `useRequestUploadUrl`, `useRegisterMedia`) come from Orval — never hand-roll fetches against `/api/admin/*`.
 
 ## Theme
 Warm musical palette: sage/teal primary on parchment cream (light mode); deep slate with same accents (dark mode). All HSL vars defined in `src/index.css`.

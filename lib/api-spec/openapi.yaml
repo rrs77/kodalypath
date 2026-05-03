@@ -20,6 +20,11 @@ tags:
   - name: curriculum
   - name: site
   - name: admin
+  - name: pages
+  - name: microcopy
+  - name: nav
+  - name: media
+  - name: Storage
 
 paths:
   /healthz:
@@ -678,6 +683,323 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/SuccessResponse" }
 
+  /pages/{slug}:
+    get:
+      operationId: getPageBySlug
+      tags: [pages]
+      summary: Public — fetch a CMS page by slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Page
+          content: { application/json: { schema: { $ref: "#/components/schemas/Page" } } }
+        "404":
+          description: Not found
+
+  /admin/pages:
+    get:
+      operationId: listPages
+      tags: [pages, admin]
+      summary: Admin — list all CMS pages
+      responses:
+        "200":
+          description: Pages
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PageSummary" }
+    post:
+      operationId: createPage
+      tags: [pages, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PageCreate" }
+      responses:
+        "200":
+          description: Created
+          content: { application/json: { schema: { $ref: "#/components/schemas/Page" } } }
+
+  /admin/pages/{id}:
+    get:
+      operationId: getPage
+      tags: [pages, admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Page
+          content: { application/json: { schema: { $ref: "#/components/schemas/Page" } } }
+    put:
+      operationId: updatePage
+      tags: [pages, admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PageUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content: { application/json: { schema: { $ref: "#/components/schemas/Page" } } }
+    delete:
+      operationId: deletePage
+      tags: [pages, admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content: { application/json: { schema: { $ref: "#/components/schemas/SuccessResponse" } } }
+
+  /microcopy:
+    get:
+      operationId: getMicrocopy
+      tags: [microcopy]
+      summary: Public — fetch all microcopy strings as a key/value map
+      responses:
+        "200":
+          description: Microcopy map
+          content: { application/json: { schema: { $ref: "#/components/schemas/MicrocopyMap" } } }
+
+  /admin/microcopy:
+    get:
+      operationId: listMicrocopy
+      tags: [microcopy, admin]
+      responses:
+        "200":
+          description: Microcopy entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/MicrocopyEntry" }
+    put:
+      operationId: upsertMicrocopy
+      tags: [microcopy, admin]
+      summary: Bulk upsert microcopy entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MicrocopyUpsert" }
+      responses:
+        "200":
+          description: Saved
+          content: { application/json: { schema: { $ref: "#/components/schemas/SuccessResponse" } } }
+
+  /nav:
+    get:
+      operationId: getNav
+      tags: [nav]
+      summary: Public — visible nav items grouped by location
+      responses:
+        "200":
+          description: Nav
+          content: { application/json: { schema: { $ref: "#/components/schemas/NavGroups" } } }
+
+  /admin/nav:
+    get:
+      operationId: listNavItems
+      tags: [nav, admin]
+      responses:
+        "200":
+          description: Nav items
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/NavItem" }
+    post:
+      operationId: createNavItem
+      tags: [nav, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NavItemCreate" }
+      responses:
+        "200":
+          description: Created
+          content: { application/json: { schema: { $ref: "#/components/schemas/NavItem" } } }
+
+  /admin/nav/{id}:
+    put:
+      operationId: updateNavItem
+      tags: [nav, admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NavItemUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content: { application/json: { schema: { $ref: "#/components/schemas/NavItem" } } }
+    delete:
+      operationId: deleteNavItem
+      tags: [nav, admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content: { application/json: { schema: { $ref: "#/components/schemas/SuccessResponse" } } }
+
+  /admin/nav/reorder:
+    post:
+      operationId: reorderNavItems
+      tags: [nav, admin]
+      summary: Persist a new sort order for a list of nav items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NavReorder" }
+      responses:
+        "200":
+          description: Saved
+          content: { application/json: { schema: { $ref: "#/components/schemas/SuccessResponse" } } }
+
+  /admin/media:
+    get:
+      operationId: listMedia
+      tags: [media, admin]
+      responses:
+        "200":
+          description: Media items
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/MediaItem" }
+    post:
+      operationId: registerMedia
+      tags: [media, admin]
+      summary: Register an uploaded object as a media library entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MediaCreate" }
+      responses:
+        "200":
+          description: Registered
+          content: { application/json: { schema: { $ref: "#/components/schemas/MediaItem" } } }
+
+  /admin/media/{id}:
+    put:
+      operationId: updateMedia
+      tags: [media, admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MediaUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content: { application/json: { schema: { $ref: "#/components/schemas/MediaItem" } } }
+    delete:
+      operationId: deleteMedia
+      tags: [media, admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content: { application/json: { schema: { $ref: "#/components/schemas/SuccessResponse" } } }
+
+  /storage/uploads/request-url:
+    post:
+      tags: [Storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UploadUrlRequest" }
+      responses:
+        "200":
+          description: Presigned upload URL generated.
+          content: { application/json: { schema: { $ref: "#/components/schemas/UploadUrlResponse" } } }
+        "400":
+          description: Invalid input
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+        "500":
+          description: Server error
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+
+  /storage/public-objects/{filePath}:
+    get:
+      tags: [Storage]
+      operationId: getPublicObject
+      summary: Serve a public asset
+      parameters:
+        - in: path
+          name: filePath
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Object stream
+          content: { "*/*": { schema: { type: string, format: binary } } }
+        "404":
+          description: Not found
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+
+  /storage/objects/{objectPath}:
+    get:
+      tags: [Storage]
+      operationId: getStorageObject
+      summary: Serve an uploaded object
+      parameters:
+        - in: path
+          name: objectPath
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Object stream
+          content: { "*/*": { schema: { type: string, format: binary } } }
+        "404":
+          description: Not found
+          content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } }
+
   /curriculum/links:
     get:
       operationId: listCurriculumLinks
@@ -1312,3 +1634,208 @@ components:
         objective: { type: string }
         skillArea: { type: string }
       required: [id, keyStage, framework, objective, skillArea]
+
+    # ----- CMS: Pages & blocks -----
+
+    Block:
+      description: |
+        A renderable content block. Persisted as JSON; the renderer chooses
+        the component by `type`. Validators on the server only check `type`
+        and `props` shape — unknown types round-trip untouched so we can
+        add block kinds without a migration.
+      type: object
+      properties:
+        id: { type: string }
+        type:
+          type: string
+          enum: [hero, heading, richText, image, columns, cta, featureGrid, videoEmbed, spacer]
+        props:
+          type: object
+          additionalProperties: true
+      required: [id, type, props]
+
+    Page:
+      type: object
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        title: { type: string }
+        published: { type: boolean }
+        blocks:
+          type: array
+          items: { $ref: "#/components/schemas/Block" }
+        updatedAt: { type: string }
+      required: [id, slug, title, published, blocks, updatedAt]
+
+    PageSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        title: { type: string }
+        published: { type: boolean }
+        blockCount: { type: integer }
+        updatedAt: { type: string }
+      required: [id, slug, title, published, blockCount, updatedAt]
+
+    PageCreate:
+      type: object
+      properties:
+        slug: { type: string, minLength: 1, maxLength: 120, pattern: "^[a-z0-9-]+$" }
+        title: { type: string, minLength: 1, maxLength: 240 }
+        published: { type: boolean }
+        blocks:
+          type: array
+          items: { $ref: "#/components/schemas/Block" }
+      required: [slug, title]
+
+    PageUpdate:
+      type: object
+      properties:
+        slug: { type: string, minLength: 1, maxLength: 120, pattern: "^[a-z0-9-]+$" }
+        title: { type: string, minLength: 1, maxLength: 240 }
+        published: { type: boolean }
+        blocks:
+          type: array
+          items: { $ref: "#/components/schemas/Block" }
+
+    # ----- CMS: Microcopy -----
+
+    MicrocopyMap:
+      description: Flat key/value map of all microcopy strings.
+      type: object
+      additionalProperties: { type: string }
+
+    MicrocopyEntry:
+      type: object
+      properties:
+        key: { type: string }
+        value: { type: string }
+        description: { type: string }
+        updatedAt: { type: string }
+      required: [key, value, description, updatedAt]
+
+    MicrocopyUpsert:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            type: object
+            properties:
+              key: { type: string, minLength: 1, maxLength: 120 }
+              value: { type: string, maxLength: 4000 }
+              description: { type: string, maxLength: 240 }
+            required: [key, value]
+        deleteKeys:
+          type: array
+          description: Keys to remove. Processed before upserts.
+          items: { type: string, minLength: 1, maxLength: 120 }
+      required: [entries]
+
+    # ----- CMS: Navigation -----
+
+    NavItem:
+      type: object
+      properties:
+        id: { type: integer }
+        location: { type: string }
+        label: { type: string }
+        href: { type: string }
+        sortOrder: { type: integer }
+        visible: { type: boolean }
+      required: [id, location, label, href, sortOrder, visible]
+
+    NavGroups:
+      description: Visible nav items grouped by `location`.
+      type: object
+      additionalProperties:
+        type: array
+        items: { $ref: "#/components/schemas/NavItem" }
+
+    NavItemCreate:
+      type: object
+      properties:
+        location: { type: string, minLength: 1, maxLength: 32 }
+        label: { type: string, minLength: 1, maxLength: 120 }
+        href: { type: string, minLength: 1, maxLength: 2048 }
+        sortOrder: { type: integer }
+        visible: { type: boolean }
+      required: [location, label, href]
+
+    NavItemUpdate:
+      type: object
+      properties:
+        location: { type: string, maxLength: 32 }
+        label: { type: string, maxLength: 120 }
+        href: { type: string, maxLength: 2048 }
+        sortOrder: { type: integer }
+        visible: { type: boolean }
+
+    NavReorder:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              sortOrder: { type: integer }
+            required: [id, sortOrder]
+      required: [items]
+
+    # ----- CMS: Media library -----
+
+    MediaItem:
+      type: object
+      properties:
+        id: { type: integer }
+        objectPath: { type: string }
+        url: { type: string }
+        fileName: { type: string }
+        mimeType: { type: string }
+        sizeBytes: { type: integer }
+        alt: { type: string }
+        createdAt: { type: string }
+      required: [id, objectPath, url, fileName, mimeType, sizeBytes, alt, createdAt]
+
+    MediaCreate:
+      type: object
+      properties:
+        objectPath: { type: string, minLength: 1, maxLength: 2048 }
+        fileName: { type: string, maxLength: 240 }
+        mimeType: { type: string, maxLength: 120 }
+        sizeBytes: { type: integer, minimum: 0 }
+        alt: { type: string, maxLength: 240 }
+      required: [objectPath]
+
+    MediaUpdate:
+      type: object
+      properties:
+        alt: { type: string, maxLength: 240 }
+        fileName: { type: string, maxLength: 240 }
+
+    # ----- Object storage -----
+
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name: { type: string, minLength: 1 }
+        size: { type: integer, minimum: 1 }
+        contentType: { type: string, minLength: 1 }
+
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL: { type: string, format: uri }
+        objectPath: { type: string }
+        metadata: { $ref: "#/components/schemas/UploadUrlRequest" }
+
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }

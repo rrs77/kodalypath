@@ -155,3 +155,49 @@ export const curriculumLinksTable = pgTable("curriculum_links", {
   objective: text("objective").notNull(),
   skillArea: text("skill_area").notNull(),
 });
+
+// CMS pages — addressable by slug. `blocks` is a discriminated-union JSON
+// payload validated by the API layer (see lib/api-spec/openapi.yaml -> Block).
+// Public GET by slug; admin CRUD. Seeded with `walkthrough` and `login-hero`.
+export const pagesTable = pgTable("pages", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 120 }).notNull().unique(),
+  title: text("title").notNull().default(""),
+  blocks: jsonb("blocks").$type<unknown[]>().notNull().default([]),
+  published: integer("published").notNull().default(1),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Microcopy — small key/value strings reused across the UI (button labels,
+// section blurbs, etc). Public GET returns the whole map.
+export const microcopyTable = pgTable("microcopy", {
+  key: varchar("key", { length: 120 }).primaryKey(),
+  value: text("value").notNull().default(""),
+  description: text("description").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Navigation items per "location" (e.g. "primary", "footer"). Ordered by
+// sortOrder ascending. Public GET returns published items only.
+export const navItemsTable = pgTable("nav_items", {
+  id: serial("id").primaryKey(),
+  location: varchar("location", { length: 32 }).notNull().default("primary"),
+  label: text("label").notNull(),
+  href: text("href").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  visible: integer("visible").notNull().default(1),
+});
+
+// Media library entries — files uploaded via presigned URL to object storage.
+// `objectPath` is the canonical path served via /api/storage/objects/<path>.
+export const mediaTable = pgTable("media", {
+  id: serial("id").primaryKey(),
+  objectPath: text("object_path").notNull(),
+  url: text("url").notNull(),
+  fileName: text("file_name").notNull().default(""),
+  mimeType: varchar("mime_type", { length: 120 }).notNull().default(""),
+  sizeBytes: integer("size_bytes").notNull().default(0),
+  alt: text("alt").notNull().default(""),
+  uploadedBy: integer("uploaded_by").references(() => teachersTable.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

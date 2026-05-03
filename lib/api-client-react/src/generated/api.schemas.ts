@@ -437,6 +437,226 @@ export interface CurriculumLink {
   skillArea: string;
 }
 
+export type BlockType = (typeof BlockType)[keyof typeof BlockType];
+
+export const BlockType = {
+  hero: "hero",
+  heading: "heading",
+  richText: "richText",
+  image: "image",
+  columns: "columns",
+  cta: "cta",
+  featureGrid: "featureGrid",
+  videoEmbed: "videoEmbed",
+  spacer: "spacer",
+} as const;
+
+export type BlockProps = { [key: string]: unknown };
+
+/**
+ * A renderable content block. Persisted as JSON; the renderer chooses
+the component by `type`. Validators on the server only check `type`
+and `props` shape — unknown types round-trip untouched so we can
+add block kinds without a migration.
+
+ */
+export interface Block {
+  id: string;
+  type: BlockType;
+  props: BlockProps;
+}
+
+export interface Page {
+  id: number;
+  slug: string;
+  title: string;
+  published: boolean;
+  blocks: Block[];
+  updatedAt: string;
+}
+
+export interface PageSummary {
+  id: number;
+  slug: string;
+  title: string;
+  published: boolean;
+  blockCount: number;
+  updatedAt: string;
+}
+
+export interface PageCreate {
+  /**
+   * @minLength 1
+   * @maxLength 120
+   * @pattern ^[a-z0-9-]+$
+   */
+  slug: string;
+  /**
+   * @minLength 1
+   * @maxLength 240
+   */
+  title: string;
+  published?: boolean;
+  blocks?: Block[];
+}
+
+export interface PageUpdate {
+  /**
+   * @minLength 1
+   * @maxLength 120
+   * @pattern ^[a-z0-9-]+$
+   */
+  slug?: string;
+  /**
+   * @minLength 1
+   * @maxLength 240
+   */
+  title?: string;
+  published?: boolean;
+  blocks?: Block[];
+}
+
+/**
+ * Flat key/value map of all microcopy strings.
+ */
+export interface MicrocopyMap {
+  [key: string]: string;
+}
+
+export interface MicrocopyEntry {
+  key: string;
+  value: string;
+  description: string;
+  updatedAt: string;
+}
+
+export type MicrocopyUpsertEntriesItem = {
+  /**
+   * @minLength 1
+   * @maxLength 120
+   */
+  key: string;
+  /** @maxLength 4000 */
+  value: string;
+  /** @maxLength 240 */
+  description?: string;
+};
+
+export interface MicrocopyUpsert {
+  entries: MicrocopyUpsertEntriesItem[];
+  /** Keys to remove. Processed before upserts. */
+  deleteKeys?: string[];
+}
+
+export interface NavItem {
+  id: number;
+  location: string;
+  label: string;
+  href: string;
+  sortOrder: number;
+  visible: boolean;
+}
+
+/**
+ * Visible nav items grouped by `location`.
+ */
+export interface NavGroups {
+  [key: string]: NavItem[];
+}
+
+export interface NavItemCreate {
+  /**
+   * @minLength 1
+   * @maxLength 32
+   */
+  location: string;
+  /**
+   * @minLength 1
+   * @maxLength 120
+   */
+  label: string;
+  /**
+   * @minLength 1
+   * @maxLength 2048
+   */
+  href: string;
+  sortOrder?: number;
+  visible?: boolean;
+}
+
+export interface NavItemUpdate {
+  /** @maxLength 32 */
+  location?: string;
+  /** @maxLength 120 */
+  label?: string;
+  /** @maxLength 2048 */
+  href?: string;
+  sortOrder?: number;
+  visible?: boolean;
+}
+
+export type NavReorderItemsItem = {
+  id: number;
+  sortOrder: number;
+};
+
+export interface NavReorder {
+  items: NavReorderItemsItem[];
+}
+
+export interface MediaItem {
+  id: number;
+  objectPath: string;
+  url: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  alt: string;
+  createdAt: string;
+}
+
+export interface MediaCreate {
+  /**
+   * @minLength 1
+   * @maxLength 2048
+   */
+  objectPath: string;
+  /** @maxLength 240 */
+  fileName?: string;
+  /** @maxLength 120 */
+  mimeType?: string;
+  /** @minimum 0 */
+  sizeBytes?: number;
+  /** @maxLength 240 */
+  alt?: string;
+}
+
+export interface MediaUpdate {
+  /** @maxLength 240 */
+  alt?: string;
+  /** @maxLength 240 */
+  fileName?: string;
+}
+
+export interface UploadUrlRequest {
+  /** @minLength 1 */
+  name: string;
+  /** @minimum 1 */
+  size: number;
+  /** @minLength 1 */
+  contentType: string;
+}
+
+export interface UploadUrlResponse {
+  uploadURL: string;
+  objectPath: string;
+  metadata?: UploadUrlRequest;
+}
+
+export interface ErrorEnvelope {
+  error: string;
+}
+
 export type ListPathwayItemsParams = {
   keyStage?: string;
   strand?: string;

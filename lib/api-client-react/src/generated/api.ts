@@ -31,6 +31,7 @@ import type {
   CurriculumLink,
   DashboardSummary,
   DuplicateLessonRequest,
+  ErrorEnvelope,
   GenerateLessonRequest,
   HealthStatus,
   ImportResourcePreview,
@@ -45,6 +46,21 @@ import type {
   ListPathwayItemsParams,
   ListResourcesParams,
   LoginRequest,
+  MediaCreate,
+  MediaItem,
+  MediaUpdate,
+  MicrocopyEntry,
+  MicrocopyMap,
+  MicrocopyUpsert,
+  NavGroups,
+  NavItem,
+  NavItemCreate,
+  NavItemUpdate,
+  NavReorder,
+  Page,
+  PageCreate,
+  PageSummary,
+  PageUpdate,
   PathwayItem,
   PathwayItemCreate,
   PathwayItemUpdate,
@@ -55,6 +71,8 @@ import type {
   SiteSettingsUpdate,
   SuccessResponse,
   Teacher,
+  UploadUrlRequest,
+  UploadUrlResponse,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -3161,6 +3179,1722 @@ export const useDeleteResource = <
 > => {
   return useMutation(getDeleteResourceMutationOptions(options));
 };
+
+/**
+ * @summary Public — fetch a CMS page by slug
+ */
+export const getGetPageBySlugUrl = (slug: string) => {
+  return `/api/pages/${slug}`;
+};
+
+export const getPageBySlug = async (
+  slug: string,
+  options?: RequestInit,
+): Promise<Page> => {
+  return customFetch<Page>(getGetPageBySlugUrl(slug), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPageBySlugQueryKey = (slug: string) => {
+  return [`/api/pages/${slug}`] as const;
+};
+
+export const getGetPageBySlugQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPageBySlug>>,
+  TError = ErrorType<void>,
+>(
+  slug: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPageBySlug>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPageBySlugQueryKey(slug);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPageBySlug>>> = ({
+    signal,
+  }) => getPageBySlug(slug, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!slug,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPageBySlug>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPageBySlugQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPageBySlug>>
+>;
+export type GetPageBySlugQueryError = ErrorType<void>;
+
+/**
+ * @summary Public — fetch a CMS page by slug
+ */
+
+export function useGetPageBySlug<
+  TData = Awaited<ReturnType<typeof getPageBySlug>>,
+  TError = ErrorType<void>,
+>(
+  slug: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPageBySlug>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPageBySlugQueryOptions(slug, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Admin — list all CMS pages
+ */
+export const getListPagesUrl = () => {
+  return `/api/admin/pages`;
+};
+
+export const listPages = async (
+  options?: RequestInit,
+): Promise<PageSummary[]> => {
+  return customFetch<PageSummary[]>(getListPagesUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListPagesQueryKey = () => {
+  return [`/api/admin/pages`] as const;
+};
+
+export const getListPagesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listPages>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listPages>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListPagesQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listPages>>> = ({
+    signal,
+  }) => listPages({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listPages>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListPagesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listPages>>
+>;
+export type ListPagesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Admin — list all CMS pages
+ */
+
+export function useListPages<
+  TData = Awaited<ReturnType<typeof listPages>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listPages>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListPagesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getCreatePageUrl = () => {
+  return `/api/admin/pages`;
+};
+
+export const createPage = async (
+  pageCreate: PageCreate,
+  options?: RequestInit,
+): Promise<Page> => {
+  return customFetch<Page>(getCreatePageUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(pageCreate),
+  });
+};
+
+export const getCreatePageMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPage>>,
+    TError,
+    { data: BodyType<PageCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createPage>>,
+  TError,
+  { data: BodyType<PageCreate> },
+  TContext
+> => {
+  const mutationKey = ["createPage"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createPage>>,
+    { data: BodyType<PageCreate> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createPage(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreatePageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createPage>>
+>;
+export type CreatePageMutationBody = BodyType<PageCreate>;
+export type CreatePageMutationError = ErrorType<unknown>;
+
+export const useCreatePage = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPage>>,
+    TError,
+    { data: BodyType<PageCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createPage>>,
+  TError,
+  { data: BodyType<PageCreate> },
+  TContext
+> => {
+  return useMutation(getCreatePageMutationOptions(options));
+};
+
+export const getGetPageUrl = (id: number) => {
+  return `/api/admin/pages/${id}`;
+};
+
+export const getPage = async (
+  id: number,
+  options?: RequestInit,
+): Promise<Page> => {
+  return customFetch<Page>(getGetPageUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPageQueryKey = (id: number) => {
+  return [`/api/admin/pages/${id}`] as const;
+};
+
+export const getGetPageQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPage>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPage>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPageQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPage>>> = ({
+    signal,
+  }) => getPage(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getPage>>, TError, TData> & {
+    queryKey: QueryKey;
+  };
+};
+
+export type GetPageQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPage>>
+>;
+export type GetPageQueryError = ErrorType<unknown>;
+
+export function useGetPage<
+  TData = Awaited<ReturnType<typeof getPage>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPage>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPageQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getUpdatePageUrl = (id: number) => {
+  return `/api/admin/pages/${id}`;
+};
+
+export const updatePage = async (
+  id: number,
+  pageUpdate: PageUpdate,
+  options?: RequestInit,
+): Promise<Page> => {
+  return customFetch<Page>(getUpdatePageUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(pageUpdate),
+  });
+};
+
+export const getUpdatePageMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePage>>,
+    TError,
+    { id: number; data: BodyType<PageUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updatePage>>,
+  TError,
+  { id: number; data: BodyType<PageUpdate> },
+  TContext
+> => {
+  const mutationKey = ["updatePage"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updatePage>>,
+    { id: number; data: BodyType<PageUpdate> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updatePage(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdatePageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updatePage>>
+>;
+export type UpdatePageMutationBody = BodyType<PageUpdate>;
+export type UpdatePageMutationError = ErrorType<unknown>;
+
+export const useUpdatePage = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePage>>,
+    TError,
+    { id: number; data: BodyType<PageUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updatePage>>,
+  TError,
+  { id: number; data: BodyType<PageUpdate> },
+  TContext
+> => {
+  return useMutation(getUpdatePageMutationOptions(options));
+};
+
+export const getDeletePageUrl = (id: number) => {
+  return `/api/admin/pages/${id}`;
+};
+
+export const deletePage = async (
+  id: number,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getDeletePageUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeletePageMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deletePage>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deletePage>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deletePage"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deletePage>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deletePage(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeletePageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deletePage>>
+>;
+
+export type DeletePageMutationError = ErrorType<unknown>;
+
+export const useDeletePage = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deletePage>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deletePage>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeletePageMutationOptions(options));
+};
+
+/**
+ * @summary Public — fetch all microcopy strings as a key/value map
+ */
+export const getGetMicrocopyUrl = () => {
+  return `/api/microcopy`;
+};
+
+export const getMicrocopy = async (
+  options?: RequestInit,
+): Promise<MicrocopyMap> => {
+  return customFetch<MicrocopyMap>(getGetMicrocopyUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetMicrocopyQueryKey = () => {
+  return [`/api/microcopy`] as const;
+};
+
+export const getGetMicrocopyQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMicrocopy>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMicrocopy>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMicrocopyQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMicrocopy>>> = ({
+    signal,
+  }) => getMicrocopy({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMicrocopy>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetMicrocopyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMicrocopy>>
+>;
+export type GetMicrocopyQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Public — fetch all microcopy strings as a key/value map
+ */
+
+export function useGetMicrocopy<
+  TData = Awaited<ReturnType<typeof getMicrocopy>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMicrocopy>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMicrocopyQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListMicrocopyUrl = () => {
+  return `/api/admin/microcopy`;
+};
+
+export const listMicrocopy = async (
+  options?: RequestInit,
+): Promise<MicrocopyEntry[]> => {
+  return customFetch<MicrocopyEntry[]>(getListMicrocopyUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListMicrocopyQueryKey = () => {
+  return [`/api/admin/microcopy`] as const;
+};
+
+export const getListMicrocopyQueryOptions = <
+  TData = Awaited<ReturnType<typeof listMicrocopy>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listMicrocopy>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListMicrocopyQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listMicrocopy>>> = ({
+    signal,
+  }) => listMicrocopy({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listMicrocopy>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListMicrocopyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listMicrocopy>>
+>;
+export type ListMicrocopyQueryError = ErrorType<unknown>;
+
+export function useListMicrocopy<
+  TData = Awaited<ReturnType<typeof listMicrocopy>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listMicrocopy>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListMicrocopyQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Bulk upsert microcopy entries
+ */
+export const getUpsertMicrocopyUrl = () => {
+  return `/api/admin/microcopy`;
+};
+
+export const upsertMicrocopy = async (
+  microcopyUpsert: MicrocopyUpsert,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getUpsertMicrocopyUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(microcopyUpsert),
+  });
+};
+
+export const getUpsertMicrocopyMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof upsertMicrocopy>>,
+    TError,
+    { data: BodyType<MicrocopyUpsert> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof upsertMicrocopy>>,
+  TError,
+  { data: BodyType<MicrocopyUpsert> },
+  TContext
+> => {
+  const mutationKey = ["upsertMicrocopy"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof upsertMicrocopy>>,
+    { data: BodyType<MicrocopyUpsert> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return upsertMicrocopy(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpsertMicrocopyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof upsertMicrocopy>>
+>;
+export type UpsertMicrocopyMutationBody = BodyType<MicrocopyUpsert>;
+export type UpsertMicrocopyMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Bulk upsert microcopy entries
+ */
+export const useUpsertMicrocopy = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof upsertMicrocopy>>,
+    TError,
+    { data: BodyType<MicrocopyUpsert> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof upsertMicrocopy>>,
+  TError,
+  { data: BodyType<MicrocopyUpsert> },
+  TContext
+> => {
+  return useMutation(getUpsertMicrocopyMutationOptions(options));
+};
+
+/**
+ * @summary Public — visible nav items grouped by location
+ */
+export const getGetNavUrl = () => {
+  return `/api/nav`;
+};
+
+export const getNav = async (options?: RequestInit): Promise<NavGroups> => {
+  return customFetch<NavGroups>(getGetNavUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetNavQueryKey = () => {
+  return [`/api/nav`] as const;
+};
+
+export const getGetNavQueryOptions = <
+  TData = Awaited<ReturnType<typeof getNav>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getNav>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetNavQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getNav>>> = ({
+    signal,
+  }) => getNav({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getNav>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetNavQueryResult = NonNullable<Awaited<ReturnType<typeof getNav>>>;
+export type GetNavQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Public — visible nav items grouped by location
+ */
+
+export function useGetNav<
+  TData = Awaited<ReturnType<typeof getNav>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getNav>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetNavQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getListNavItemsUrl = () => {
+  return `/api/admin/nav`;
+};
+
+export const listNavItems = async (
+  options?: RequestInit,
+): Promise<NavItem[]> => {
+  return customFetch<NavItem[]>(getListNavItemsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListNavItemsQueryKey = () => {
+  return [`/api/admin/nav`] as const;
+};
+
+export const getListNavItemsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listNavItems>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listNavItems>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListNavItemsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listNavItems>>> = ({
+    signal,
+  }) => listNavItems({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listNavItems>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListNavItemsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listNavItems>>
+>;
+export type ListNavItemsQueryError = ErrorType<unknown>;
+
+export function useListNavItems<
+  TData = Awaited<ReturnType<typeof listNavItems>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listNavItems>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListNavItemsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getCreateNavItemUrl = () => {
+  return `/api/admin/nav`;
+};
+
+export const createNavItem = async (
+  navItemCreate: NavItemCreate,
+  options?: RequestInit,
+): Promise<NavItem> => {
+  return customFetch<NavItem>(getCreateNavItemUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(navItemCreate),
+  });
+};
+
+export const getCreateNavItemMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createNavItem>>,
+    TError,
+    { data: BodyType<NavItemCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createNavItem>>,
+  TError,
+  { data: BodyType<NavItemCreate> },
+  TContext
+> => {
+  const mutationKey = ["createNavItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createNavItem>>,
+    { data: BodyType<NavItemCreate> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createNavItem(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateNavItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createNavItem>>
+>;
+export type CreateNavItemMutationBody = BodyType<NavItemCreate>;
+export type CreateNavItemMutationError = ErrorType<unknown>;
+
+export const useCreateNavItem = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createNavItem>>,
+    TError,
+    { data: BodyType<NavItemCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createNavItem>>,
+  TError,
+  { data: BodyType<NavItemCreate> },
+  TContext
+> => {
+  return useMutation(getCreateNavItemMutationOptions(options));
+};
+
+export const getUpdateNavItemUrl = (id: number) => {
+  return `/api/admin/nav/${id}`;
+};
+
+export const updateNavItem = async (
+  id: number,
+  navItemUpdate: NavItemUpdate,
+  options?: RequestInit,
+): Promise<NavItem> => {
+  return customFetch<NavItem>(getUpdateNavItemUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(navItemUpdate),
+  });
+};
+
+export const getUpdateNavItemMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateNavItem>>,
+    TError,
+    { id: number; data: BodyType<NavItemUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateNavItem>>,
+  TError,
+  { id: number; data: BodyType<NavItemUpdate> },
+  TContext
+> => {
+  const mutationKey = ["updateNavItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateNavItem>>,
+    { id: number; data: BodyType<NavItemUpdate> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateNavItem(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateNavItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateNavItem>>
+>;
+export type UpdateNavItemMutationBody = BodyType<NavItemUpdate>;
+export type UpdateNavItemMutationError = ErrorType<unknown>;
+
+export const useUpdateNavItem = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateNavItem>>,
+    TError,
+    { id: number; data: BodyType<NavItemUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateNavItem>>,
+  TError,
+  { id: number; data: BodyType<NavItemUpdate> },
+  TContext
+> => {
+  return useMutation(getUpdateNavItemMutationOptions(options));
+};
+
+export const getDeleteNavItemUrl = (id: number) => {
+  return `/api/admin/nav/${id}`;
+};
+
+export const deleteNavItem = async (
+  id: number,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getDeleteNavItemUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteNavItemMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteNavItem>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteNavItem>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteNavItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteNavItem>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteNavItem(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteNavItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteNavItem>>
+>;
+
+export type DeleteNavItemMutationError = ErrorType<unknown>;
+
+export const useDeleteNavItem = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteNavItem>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteNavItem>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteNavItemMutationOptions(options));
+};
+
+/**
+ * @summary Persist a new sort order for a list of nav items
+ */
+export const getReorderNavItemsUrl = () => {
+  return `/api/admin/nav/reorder`;
+};
+
+export const reorderNavItems = async (
+  navReorder: NavReorder,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getReorderNavItemsUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(navReorder),
+  });
+};
+
+export const getReorderNavItemsMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof reorderNavItems>>,
+    TError,
+    { data: BodyType<NavReorder> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof reorderNavItems>>,
+  TError,
+  { data: BodyType<NavReorder> },
+  TContext
+> => {
+  const mutationKey = ["reorderNavItems"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof reorderNavItems>>,
+    { data: BodyType<NavReorder> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return reorderNavItems(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ReorderNavItemsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof reorderNavItems>>
+>;
+export type ReorderNavItemsMutationBody = BodyType<NavReorder>;
+export type ReorderNavItemsMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Persist a new sort order for a list of nav items
+ */
+export const useReorderNavItems = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof reorderNavItems>>,
+    TError,
+    { data: BodyType<NavReorder> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof reorderNavItems>>,
+  TError,
+  { data: BodyType<NavReorder> },
+  TContext
+> => {
+  return useMutation(getReorderNavItemsMutationOptions(options));
+};
+
+export const getListMediaUrl = () => {
+  return `/api/admin/media`;
+};
+
+export const listMedia = async (
+  options?: RequestInit,
+): Promise<MediaItem[]> => {
+  return customFetch<MediaItem[]>(getListMediaUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListMediaQueryKey = () => {
+  return [`/api/admin/media`] as const;
+};
+
+export const getListMediaQueryOptions = <
+  TData = Awaited<ReturnType<typeof listMedia>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listMedia>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListMediaQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listMedia>>> = ({
+    signal,
+  }) => listMedia({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listMedia>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListMediaQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listMedia>>
+>;
+export type ListMediaQueryError = ErrorType<unknown>;
+
+export function useListMedia<
+  TData = Awaited<ReturnType<typeof listMedia>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listMedia>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListMediaQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Register an uploaded object as a media library entry
+ */
+export const getRegisterMediaUrl = () => {
+  return `/api/admin/media`;
+};
+
+export const registerMedia = async (
+  mediaCreate: MediaCreate,
+  options?: RequestInit,
+): Promise<MediaItem> => {
+  return customFetch<MediaItem>(getRegisterMediaUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(mediaCreate),
+  });
+};
+
+export const getRegisterMediaMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof registerMedia>>,
+    TError,
+    { data: BodyType<MediaCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof registerMedia>>,
+  TError,
+  { data: BodyType<MediaCreate> },
+  TContext
+> => {
+  const mutationKey = ["registerMedia"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof registerMedia>>,
+    { data: BodyType<MediaCreate> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return registerMedia(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RegisterMediaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof registerMedia>>
+>;
+export type RegisterMediaMutationBody = BodyType<MediaCreate>;
+export type RegisterMediaMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Register an uploaded object as a media library entry
+ */
+export const useRegisterMedia = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof registerMedia>>,
+    TError,
+    { data: BodyType<MediaCreate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof registerMedia>>,
+  TError,
+  { data: BodyType<MediaCreate> },
+  TContext
+> => {
+  return useMutation(getRegisterMediaMutationOptions(options));
+};
+
+export const getUpdateMediaUrl = (id: number) => {
+  return `/api/admin/media/${id}`;
+};
+
+export const updateMedia = async (
+  id: number,
+  mediaUpdate: MediaUpdate,
+  options?: RequestInit,
+): Promise<MediaItem> => {
+  return customFetch<MediaItem>(getUpdateMediaUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(mediaUpdate),
+  });
+};
+
+export const getUpdateMediaMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateMedia>>,
+    TError,
+    { id: number; data: BodyType<MediaUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateMedia>>,
+  TError,
+  { id: number; data: BodyType<MediaUpdate> },
+  TContext
+> => {
+  const mutationKey = ["updateMedia"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateMedia>>,
+    { id: number; data: BodyType<MediaUpdate> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateMedia(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateMediaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateMedia>>
+>;
+export type UpdateMediaMutationBody = BodyType<MediaUpdate>;
+export type UpdateMediaMutationError = ErrorType<unknown>;
+
+export const useUpdateMedia = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateMedia>>,
+    TError,
+    { id: number; data: BodyType<MediaUpdate> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateMedia>>,
+  TError,
+  { id: number; data: BodyType<MediaUpdate> },
+  TContext
+> => {
+  return useMutation(getUpdateMediaMutationOptions(options));
+};
+
+export const getDeleteMediaUrl = (id: number) => {
+  return `/api/admin/media/${id}`;
+};
+
+export const deleteMedia = async (
+  id: number,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getDeleteMediaUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteMediaMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMedia>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMedia>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteMedia"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMedia>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteMedia(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteMediaMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMedia>>
+>;
+
+export type DeleteMediaMutationError = ErrorType<unknown>;
+
+export const useDeleteMedia = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMedia>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMedia>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteMediaMutationOptions(options));
+};
+
+/**
+ * @summary Request a presigned URL for file upload (admin only)
+ */
+export const getRequestUploadUrlUrl = () => {
+  return `/api/storage/uploads/request-url`;
+};
+
+export const requestUploadUrl = async (
+  uploadUrlRequest: UploadUrlRequest,
+  options?: RequestInit,
+): Promise<UploadUrlResponse> => {
+  return customFetch<UploadUrlResponse>(getRequestUploadUrlUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(uploadUrlRequest),
+  });
+};
+
+export const getRequestUploadUrlMutationOptions = <
+  TError = ErrorType<ErrorEnvelope>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestUploadUrl>>,
+    TError,
+    { data: BodyType<UploadUrlRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof requestUploadUrl>>,
+  TError,
+  { data: BodyType<UploadUrlRequest> },
+  TContext
+> => {
+  const mutationKey = ["requestUploadUrl"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof requestUploadUrl>>,
+    { data: BodyType<UploadUrlRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return requestUploadUrl(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RequestUploadUrlMutationResult = NonNullable<
+  Awaited<ReturnType<typeof requestUploadUrl>>
+>;
+export type RequestUploadUrlMutationBody = BodyType<UploadUrlRequest>;
+export type RequestUploadUrlMutationError = ErrorType<ErrorEnvelope>;
+
+/**
+ * @summary Request a presigned URL for file upload (admin only)
+ */
+export const useRequestUploadUrl = <
+  TError = ErrorType<ErrorEnvelope>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestUploadUrl>>,
+    TError,
+    { data: BodyType<UploadUrlRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof requestUploadUrl>>,
+  TError,
+  { data: BodyType<UploadUrlRequest> },
+  TContext
+> => {
+  return useMutation(getRequestUploadUrlMutationOptions(options));
+};
+
+/**
+ * @summary Serve a public asset
+ */
+export const getGetPublicObjectUrl = (filePath: string) => {
+  return `/api/storage/public-objects/${filePath}`;
+};
+
+export const getPublicObject = async (
+  filePath: string,
+  options?: RequestInit,
+): Promise<Blob> => {
+  return customFetch<Blob>(getGetPublicObjectUrl(filePath), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPublicObjectQueryKey = (filePath: string) => {
+  return [`/api/storage/public-objects/${filePath}`] as const;
+};
+
+export const getGetPublicObjectQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPublicObject>>,
+  TError = ErrorType<ErrorEnvelope>,
+>(
+  filePath: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPublicObject>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetPublicObjectQueryKey(filePath);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicObject>>> = ({
+    signal,
+  }) => getPublicObject(filePath, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!filePath,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPublicObject>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPublicObjectQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPublicObject>>
+>;
+export type GetPublicObjectQueryError = ErrorType<ErrorEnvelope>;
+
+/**
+ * @summary Serve a public asset
+ */
+
+export function useGetPublicObject<
+  TData = Awaited<ReturnType<typeof getPublicObject>>,
+  TError = ErrorType<ErrorEnvelope>,
+>(
+  filePath: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPublicObject>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPublicObjectQueryOptions(filePath, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Serve an uploaded object
+ */
+export const getGetStorageObjectUrl = (objectPath: string) => {
+  return `/api/storage/objects/${objectPath}`;
+};
+
+export const getStorageObject = async (
+  objectPath: string,
+  options?: RequestInit,
+): Promise<Blob> => {
+  return customFetch<Blob>(getGetStorageObjectUrl(objectPath), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetStorageObjectQueryKey = (objectPath: string) => {
+  return [`/api/storage/objects/${objectPath}`] as const;
+};
+
+export const getGetStorageObjectQueryOptions = <
+  TData = Awaited<ReturnType<typeof getStorageObject>>,
+  TError = ErrorType<ErrorEnvelope>,
+>(
+  objectPath: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getStorageObject>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetStorageObjectQueryKey(objectPath);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getStorageObject>>
+  > = ({ signal }) =>
+    getStorageObject(objectPath, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!objectPath,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getStorageObject>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetStorageObjectQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getStorageObject>>
+>;
+export type GetStorageObjectQueryError = ErrorType<ErrorEnvelope>;
+
+/**
+ * @summary Serve an uploaded object
+ */
+
+export function useGetStorageObject<
+  TData = Awaited<ReturnType<typeof getStorageObject>>,
+  TError = ErrorType<ErrorEnvelope>,
+>(
+  objectPath: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getStorageObject>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetStorageObjectQueryOptions(objectPath, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 export const getListCurriculumLinksUrl = (
   params?: ListCurriculumLinksParams,

@@ -1092,6 +1092,497 @@ export const DeleteResourceResponse = zod.object({
   success: zod.boolean(),
 });
 
+/**
+ * @summary Public — fetch a CMS page by slug
+ */
+export const GetPageBySlugParams = zod.object({
+  slug: zod.coerce.string(),
+});
+
+export const GetPageBySlugResponse = zod.object({
+  id: zod.number(),
+  slug: zod.string(),
+  title: zod.string(),
+  published: zod.boolean(),
+  blocks: zod.array(
+    zod
+      .object({
+        id: zod.string(),
+        type: zod.enum([
+          "hero",
+          "heading",
+          "richText",
+          "image",
+          "columns",
+          "cta",
+          "featureGrid",
+          "videoEmbed",
+          "spacer",
+        ]),
+        props: zod.record(zod.string(), zod.unknown()),
+      })
+      .describe(
+        "A renderable content block. Persisted as JSON; the renderer chooses\nthe component by `type`. Validators on the server only check `type`\nand `props` shape — unknown types round-trip untouched so we can\nadd block kinds without a migration.\n",
+      ),
+  ),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Admin — list all CMS pages
+ */
+export const ListPagesResponseItem = zod.object({
+  id: zod.number(),
+  slug: zod.string(),
+  title: zod.string(),
+  published: zod.boolean(),
+  blockCount: zod.number(),
+  updatedAt: zod.string(),
+});
+export const ListPagesResponse = zod.array(ListPagesResponseItem);
+
+export const createPageBodySlugMax = 120;
+
+export const createPageBodySlugRegExp = new RegExp("^[a-z0-9-]+$");
+export const createPageBodyTitleMax = 240;
+
+export const CreatePageBody = zod.object({
+  slug: zod
+    .string()
+    .min(1)
+    .max(createPageBodySlugMax)
+    .regex(createPageBodySlugRegExp),
+  title: zod.string().min(1).max(createPageBodyTitleMax),
+  published: zod.boolean().optional(),
+  blocks: zod
+    .array(
+      zod
+        .object({
+          id: zod.string(),
+          type: zod.enum([
+            "hero",
+            "heading",
+            "richText",
+            "image",
+            "columns",
+            "cta",
+            "featureGrid",
+            "videoEmbed",
+            "spacer",
+          ]),
+          props: zod.record(zod.string(), zod.unknown()),
+        })
+        .describe(
+          "A renderable content block. Persisted as JSON; the renderer chooses\nthe component by `type`. Validators on the server only check `type`\nand `props` shape — unknown types round-trip untouched so we can\nadd block kinds without a migration.\n",
+        ),
+    )
+    .optional(),
+});
+
+export const CreatePageResponse = zod.object({
+  id: zod.number(),
+  slug: zod.string(),
+  title: zod.string(),
+  published: zod.boolean(),
+  blocks: zod.array(
+    zod
+      .object({
+        id: zod.string(),
+        type: zod.enum([
+          "hero",
+          "heading",
+          "richText",
+          "image",
+          "columns",
+          "cta",
+          "featureGrid",
+          "videoEmbed",
+          "spacer",
+        ]),
+        props: zod.record(zod.string(), zod.unknown()),
+      })
+      .describe(
+        "A renderable content block. Persisted as JSON; the renderer chooses\nthe component by `type`. Validators on the server only check `type`\nand `props` shape — unknown types round-trip untouched so we can\nadd block kinds without a migration.\n",
+      ),
+  ),
+  updatedAt: zod.string(),
+});
+
+export const GetPageParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetPageResponse = zod.object({
+  id: zod.number(),
+  slug: zod.string(),
+  title: zod.string(),
+  published: zod.boolean(),
+  blocks: zod.array(
+    zod
+      .object({
+        id: zod.string(),
+        type: zod.enum([
+          "hero",
+          "heading",
+          "richText",
+          "image",
+          "columns",
+          "cta",
+          "featureGrid",
+          "videoEmbed",
+          "spacer",
+        ]),
+        props: zod.record(zod.string(), zod.unknown()),
+      })
+      .describe(
+        "A renderable content block. Persisted as JSON; the renderer chooses\nthe component by `type`. Validators on the server only check `type`\nand `props` shape — unknown types round-trip untouched so we can\nadd block kinds without a migration.\n",
+      ),
+  ),
+  updatedAt: zod.string(),
+});
+
+export const UpdatePageParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const updatePageBodySlugMax = 120;
+
+export const updatePageBodySlugRegExp = new RegExp("^[a-z0-9-]+$");
+export const updatePageBodyTitleMax = 240;
+
+export const UpdatePageBody = zod.object({
+  slug: zod
+    .string()
+    .min(1)
+    .max(updatePageBodySlugMax)
+    .regex(updatePageBodySlugRegExp)
+    .optional(),
+  title: zod.string().min(1).max(updatePageBodyTitleMax).optional(),
+  published: zod.boolean().optional(),
+  blocks: zod
+    .array(
+      zod
+        .object({
+          id: zod.string(),
+          type: zod.enum([
+            "hero",
+            "heading",
+            "richText",
+            "image",
+            "columns",
+            "cta",
+            "featureGrid",
+            "videoEmbed",
+            "spacer",
+          ]),
+          props: zod.record(zod.string(), zod.unknown()),
+        })
+        .describe(
+          "A renderable content block. Persisted as JSON; the renderer chooses\nthe component by `type`. Validators on the server only check `type`\nand `props` shape — unknown types round-trip untouched so we can\nadd block kinds without a migration.\n",
+        ),
+    )
+    .optional(),
+});
+
+export const UpdatePageResponse = zod.object({
+  id: zod.number(),
+  slug: zod.string(),
+  title: zod.string(),
+  published: zod.boolean(),
+  blocks: zod.array(
+    zod
+      .object({
+        id: zod.string(),
+        type: zod.enum([
+          "hero",
+          "heading",
+          "richText",
+          "image",
+          "columns",
+          "cta",
+          "featureGrid",
+          "videoEmbed",
+          "spacer",
+        ]),
+        props: zod.record(zod.string(), zod.unknown()),
+      })
+      .describe(
+        "A renderable content block. Persisted as JSON; the renderer chooses\nthe component by `type`. Validators on the server only check `type`\nand `props` shape — unknown types round-trip untouched so we can\nadd block kinds without a migration.\n",
+      ),
+  ),
+  updatedAt: zod.string(),
+});
+
+export const DeletePageParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeletePageResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Public — fetch all microcopy strings as a key/value map
+ */
+export const GetMicrocopyResponse = zod
+  .record(zod.string(), zod.string())
+  .describe("Flat key\/value map of all microcopy strings.");
+
+export const ListMicrocopyResponseItem = zod.object({
+  key: zod.string(),
+  value: zod.string(),
+  description: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListMicrocopyResponse = zod.array(ListMicrocopyResponseItem);
+
+/**
+ * @summary Bulk upsert microcopy entries
+ */
+export const upsertMicrocopyBodyEntriesItemKeyMax = 120;
+
+export const upsertMicrocopyBodyEntriesItemValueMax = 4000;
+
+export const upsertMicrocopyBodyEntriesItemDescriptionMax = 240;
+
+export const upsertMicrocopyBodyDeleteKeysItemMax = 120;
+
+export const UpsertMicrocopyBody = zod.object({
+  entries: zod.array(
+    zod.object({
+      key: zod.string().min(1).max(upsertMicrocopyBodyEntriesItemKeyMax),
+      value: zod.string().max(upsertMicrocopyBodyEntriesItemValueMax),
+      description: zod
+        .string()
+        .max(upsertMicrocopyBodyEntriesItemDescriptionMax)
+        .optional(),
+    }),
+  ),
+  deleteKeys: zod
+    .array(zod.string().min(1).max(upsertMicrocopyBodyDeleteKeysItemMax))
+    .optional()
+    .describe("Keys to remove. Processed before upserts."),
+});
+
+export const UpsertMicrocopyResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Public — visible nav items grouped by location
+ */
+export const GetNavResponse = zod
+  .record(
+    zod.string(),
+    zod.array(
+      zod.object({
+        id: zod.number(),
+        location: zod.string(),
+        label: zod.string(),
+        href: zod.string(),
+        sortOrder: zod.number(),
+        visible: zod.boolean(),
+      }),
+    ),
+  )
+  .describe("Visible nav items grouped by `location`.");
+
+export const ListNavItemsResponseItem = zod.object({
+  id: zod.number(),
+  location: zod.string(),
+  label: zod.string(),
+  href: zod.string(),
+  sortOrder: zod.number(),
+  visible: zod.boolean(),
+});
+export const ListNavItemsResponse = zod.array(ListNavItemsResponseItem);
+
+export const createNavItemBodyLocationMax = 32;
+
+export const createNavItemBodyLabelMax = 120;
+
+export const createNavItemBodyHrefMax = 2048;
+
+export const CreateNavItemBody = zod.object({
+  location: zod.string().min(1).max(createNavItemBodyLocationMax),
+  label: zod.string().min(1).max(createNavItemBodyLabelMax),
+  href: zod.string().min(1).max(createNavItemBodyHrefMax),
+  sortOrder: zod.number().optional(),
+  visible: zod.boolean().optional(),
+});
+
+export const CreateNavItemResponse = zod.object({
+  id: zod.number(),
+  location: zod.string(),
+  label: zod.string(),
+  href: zod.string(),
+  sortOrder: zod.number(),
+  visible: zod.boolean(),
+});
+
+export const UpdateNavItemParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const updateNavItemBodyLocationMax = 32;
+
+export const updateNavItemBodyLabelMax = 120;
+
+export const updateNavItemBodyHrefMax = 2048;
+
+export const UpdateNavItemBody = zod.object({
+  location: zod.string().max(updateNavItemBodyLocationMax).optional(),
+  label: zod.string().max(updateNavItemBodyLabelMax).optional(),
+  href: zod.string().max(updateNavItemBodyHrefMax).optional(),
+  sortOrder: zod.number().optional(),
+  visible: zod.boolean().optional(),
+});
+
+export const UpdateNavItemResponse = zod.object({
+  id: zod.number(),
+  location: zod.string(),
+  label: zod.string(),
+  href: zod.string(),
+  sortOrder: zod.number(),
+  visible: zod.boolean(),
+});
+
+export const DeleteNavItemParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteNavItemResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Persist a new sort order for a list of nav items
+ */
+export const ReorderNavItemsBody = zod.object({
+  items: zod.array(
+    zod.object({
+      id: zod.number(),
+      sortOrder: zod.number(),
+    }),
+  ),
+});
+
+export const ReorderNavItemsResponse = zod.object({
+  success: zod.boolean(),
+});
+
+export const ListMediaResponseItem = zod.object({
+  id: zod.number(),
+  objectPath: zod.string(),
+  url: zod.string(),
+  fileName: zod.string(),
+  mimeType: zod.string(),
+  sizeBytes: zod.number(),
+  alt: zod.string(),
+  createdAt: zod.string(),
+});
+export const ListMediaResponse = zod.array(ListMediaResponseItem);
+
+/**
+ * @summary Register an uploaded object as a media library entry
+ */
+export const registerMediaBodyObjectPathMax = 2048;
+
+export const registerMediaBodyFileNameMax = 240;
+
+export const registerMediaBodyMimeTypeMax = 120;
+
+export const registerMediaBodySizeBytesMin = 0;
+
+export const registerMediaBodyAltMax = 240;
+
+export const RegisterMediaBody = zod.object({
+  objectPath: zod.string().min(1).max(registerMediaBodyObjectPathMax),
+  fileName: zod.string().max(registerMediaBodyFileNameMax).optional(),
+  mimeType: zod.string().max(registerMediaBodyMimeTypeMax).optional(),
+  sizeBytes: zod.number().min(registerMediaBodySizeBytesMin).optional(),
+  alt: zod.string().max(registerMediaBodyAltMax).optional(),
+});
+
+export const RegisterMediaResponse = zod.object({
+  id: zod.number(),
+  objectPath: zod.string(),
+  url: zod.string(),
+  fileName: zod.string(),
+  mimeType: zod.string(),
+  sizeBytes: zod.number(),
+  alt: zod.string(),
+  createdAt: zod.string(),
+});
+
+export const UpdateMediaParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const updateMediaBodyAltMax = 240;
+
+export const updateMediaBodyFileNameMax = 240;
+
+export const UpdateMediaBody = zod.object({
+  alt: zod.string().max(updateMediaBodyAltMax).optional(),
+  fileName: zod.string().max(updateMediaBodyFileNameMax).optional(),
+});
+
+export const UpdateMediaResponse = zod.object({
+  id: zod.number(),
+  objectPath: zod.string(),
+  url: zod.string(),
+  fileName: zod.string(),
+  mimeType: zod.string(),
+  sizeBytes: zod.number(),
+  alt: zod.string(),
+  createdAt: zod.string(),
+});
+
+export const DeleteMediaParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteMediaResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Request a presigned URL for file upload (admin only)
+ */
+
+export const RequestUploadUrlBody = zod.object({
+  name: zod.string().min(1),
+  size: zod.number().min(1),
+  contentType: zod.string().min(1),
+});
+
+export const RequestUploadUrlResponse = zod.object({
+  uploadURL: zod.string().url(),
+  objectPath: zod.string(),
+  metadata: zod
+    .object({
+      name: zod.string().min(1),
+      size: zod.number().min(1),
+      contentType: zod.string().min(1),
+    })
+    .optional(),
+});
+
+/**
+ * @summary Serve a public asset
+ */
+export const GetPublicObjectParams = zod.object({
+  filePath: zod.coerce.string(),
+});
+
+/**
+ * @summary Serve an uploaded object
+ */
+export const GetStorageObjectParams = zod.object({
+  objectPath: zod.coerce.string(),
+});
+
 export const ListCurriculumLinksQueryParams = zod.object({
   keyStage: zod.coerce.string().optional(),
 });

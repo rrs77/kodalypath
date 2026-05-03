@@ -22,12 +22,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { PagesPanel } from "@/components/admin/PagesPanel";
+import { MicrocopyPanel } from "@/components/admin/MicrocopyPanel";
+import { NavigationPanel } from "@/components/admin/NavigationPanel";
+import { MediaPanel } from "@/components/admin/MediaPanel";
+import { Type as TypeIcon } from "lucide-react";
 
 const ADMIN_NAV = [
   { href: "/admin", label: "Branding", icon: SettingsIcon, exact: true },
-  { href: "/admin/pages", label: "Pages", icon: FileText, soon: true },
-  { href: "/admin/navigation", label: "Navigation", icon: NavigationIcon, soon: true },
-  { href: "/admin/media", label: "Media", icon: ImageIcon, soon: true },
+  { href: "/admin/pages", label: "Pages", icon: FileText },
+  { href: "/admin/navigation", label: "Navigation", icon: NavigationIcon },
+  { href: "/admin/microcopy", label: "Microcopy", icon: TypeIcon },
+  { href: "/admin/media", label: "Media", icon: ImageIcon },
   { href: "/admin/users", label: "Users", icon: Users, soon: true },
 ];
 
@@ -105,9 +111,10 @@ function AdminShell() {
         <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-10">
           <Switch>
             <Route path="/admin" component={BrandingPanel} />
-            <Route path="/admin/pages" component={ComingSoon} />
-            <Route path="/admin/navigation" component={ComingSoon} />
-            <Route path="/admin/media" component={ComingSoon} />
+            <Route path="/admin/pages" component={PagesPanel} />
+            <Route path="/admin/navigation" component={NavigationPanel} />
+            <Route path="/admin/microcopy" component={MicrocopyPanel} />
+            <Route path="/admin/media" component={MediaPanel} />
             <Route path="/admin/users" component={ComingSoon} />
             <Route component={ComingSoon} />
           </Switch>

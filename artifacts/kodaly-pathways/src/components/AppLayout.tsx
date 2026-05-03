@@ -2,28 +2,45 @@ import { Link, useLocation } from "wouter";
 import { ReactNode, useEffect, useState } from "react";
 import {
   LayoutDashboard, GraduationCap, Map, Library, NotebookPen, CalendarDays,
-  Folder, Monitor, Settings, Music, Menu, X, Shield,
+  Folder, Monitor, Settings, Music, Menu, X, Shield, Link2,
 } from "lucide-react";
+import type { ComponentType } from "react";
 import { cn } from "@/lib/utils";
-import type { Teacher } from "@workspace/api-client-react";
+import { useGetNav, type Teacher } from "@workspace/api-client-react";
 import { useSiteSettings } from "@/lib/site-settings";
 
-const NAV = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/classes", label: "Classes", icon: GraduationCap },
-  { href: "/pathway", label: "Pathway", icon: Map },
-  { href: "/activities", label: "Activities", icon: Library },
-  { href: "/lesson-builder", label: "Lessons", icon: NotebookPen },
-  { href: "/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/resources", label: "Resources", icon: Folder },
-  { href: "/iwb", label: "IWB Mode", icon: Monitor },
-  { href: "/settings", label: "Settings", icon: Settings },
+// Map a route href to a sensible default icon. Falls back to a chain icon for
+// custom links the admin adds later. Keeps icon choice declarative and means
+// the DB only has to store labels + hrefs.
+const ICON_BY_HREF: Record<string, ComponentType<{ className?: string }>> = {
+  "/dashboard": LayoutDashboard,
+  "/classes": GraduationCap,
+  "/pathway": Map,
+  "/activities": Library,
+  "/lesson-builder": NotebookPen,
+  "/calendar": CalendarDays,
+  "/resources": Folder,
+  "/iwb": Monitor,
+  "/settings": Settings,
+};
+const FALLBACK_NAV = [
+  { id: -1, href: "/dashboard", label: "Dashboard", sortOrder: 10, visible: true, location: "primary" as const },
+  { id: -2, href: "/classes", label: "Classes", sortOrder: 20, visible: true, location: "primary" as const },
+  { id: -3, href: "/pathway", label: "Pathway", sortOrder: 30, visible: true, location: "primary" as const },
+  { id: -4, href: "/activities", label: "Activities", sortOrder: 40, visible: true, location: "primary" as const },
+  { id: -5, href: "/lesson-builder", label: "Lessons", sortOrder: 50, visible: true, location: "primary" as const },
+  { id: -6, href: "/calendar", label: "Calendar", sortOrder: 60, visible: true, location: "primary" as const },
+  { id: -7, href: "/resources", label: "Resources", sortOrder: 70, visible: true, location: "primary" as const },
+  { id: -8, href: "/iwb", label: "IWB Mode", sortOrder: 80, visible: true, location: "primary" as const },
+  { id: -9, href: "/settings", label: "Settings", sortOrder: 90, visible: true, location: "primary" as const },
 ];
 
 export function AppLayout({ children, teacher }: { children: ReactNode; teacher: Teacher | null }) {
   const [loc] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const settings = useSiteSettings();
+  const { data: navGroups } = useGetNav();
+  const primaryNav = (navGroups?.primary && navGroups.primary.length > 0) ? navGroups.primary : FALLBACK_NAV;
   const isAdmin = teacher?.role === "admin";
   const brandName = settings.siteName || "Kodály Pathways";
   const brandTagline = settings.tagline || "Music lesson planner";
@@ -65,12 +82,12 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
         </div>
       </div>
       <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto" aria-label="Primary">
-        {NAV.map((item) => {
+        {primaryNav.map((item) => {
           const active = loc === item.href || loc.startsWith(item.href + "/");
-          const Icon = item.icon;
+          const Icon = ICON_BY_HREF[item.href] ?? Link2;
           return (
             <Link
-              key={item.href}
+              key={item.id}
               href={item.href}
               className={cn(
                 "relative flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors hover-elevate",
@@ -78,7 +95,7 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
                 active && "kp-nav-active font-medium",
               )}
               aria-current={active ? "page" : undefined}
-              data-testid={`nav-${item.href.replace("/", "")}`}
+              data-testid={`nav-${item.href.replace(/^\//, "").replace(/\//g, "-")}`}
             >
               <Icon className={cn("w-4 h-4 transition-colors", active ? "text-sidebar-primary" : "opacity-80")} />
               {item.label}
