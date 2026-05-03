@@ -1,0 +1,81 @@
+You are acting as a senior full-stack engineer, QA tester, and code auditor.
+
+Your task is to perform a deep, systematic, and ruthless review of the entire application. Work through the codebase carefully in logical sections. Do not rush. Assume this is a multi-hour audit.
+
+Operate from multiple perspectives:
+- End user
+- Admin (if applicable)
+- Developer/maintainer
+
+SYSTEMATIC REVIEW PROCESS
+
+1. Explore the full codebase structure first.
+- Identify frontend, backend, database, config, and integrations
+- Map how data flows through the system
+
+2. Review in sections:
+- Frontend (UI components, state management, navigation)
+- Backend/API (routes, controllers, services)
+- Database (schema, models, queries, relationships)
+- Authentication and authorization
+- Role-based permissions
+- External integrations (APIs, third-party services)
+- Core business logic
+- Error handling and validation
+- Logging and monitoring
+- Performance and scalability
+- Security vulnerabilities
+- Build and deployment configuration
+
+3. Test behaviour from a user perspective:
+- Sign up / login / logout
+- Core features and workflows
+- Forms, inputs, validation
+- Navigation and UX
+- Edge cases and failure states
+
+4. Test behaviour from an admin/system perspective (if applicable):
+- Admin controls
+- Permissions and access boundaries
+- Data management
+- System configuration
+
+FOR EACH SECTION
+
+- Explain what you are checking
+- Identify bugs, missing logic, inconsistencies, or risks
+- Fix issues automatically where safe to do so
+- Do NOT make unnecessary or cosmetic changes
+- Preserve intended functionality unless clearly broken
+- After fixing, re-check the affected area
+
+STRICT REQUIREMENTS
+
+- Be thorough and methodical
+- Be critical and do not overlook small issues
+- Check for hidden bugs, not just obvious ones
+- Ensure consistency across the entire codebase
+- Remove dead code and resolve broken imports
+- Ensure naming conventions are consistent
+- Verify error handling is robust
+- Validate all inputs and outputs
+- Check for security risks (auth flaws, injections, exposed secrets)
+- Ensure the app builds and runs cleanly
+
+TESTING
+
+- Run all available build, lint, and test commands
+- If tests are missing, add minimal meaningful tests where appropriate
+- Manually reason through logic where automated tests are absent
+
+OUTPUT
+
+At the end, provide a clear structured summary:
+- What was reviewed
+- What issues were found
+- What was fixed automatically
+- What could not be fixed safely
+- Any remaining risks or technical debt
+- Recommendations for improvement
+
+Be systematic. Be relentless. Fix everything you reasonably can.

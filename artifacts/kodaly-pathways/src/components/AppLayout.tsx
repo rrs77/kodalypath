@@ -38,17 +38,17 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
             const active = loc === item.href || loc.startsWith(item.href + "/");
             const Icon = item.icon;
             return (
-              <Link key={item.href} href={item.href}>
-                <a
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm hover-elevate",
-                    active && "bg-sidebar-accent text-sidebar-accent-foreground",
-                  )}
-                  data-testid={`nav-${item.href.replace("/", "")}`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {item.label}
-                </a>
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm hover-elevate",
+                  active && "bg-sidebar-accent text-sidebar-accent-foreground",
+                )}
+                data-testid={`nav-${item.href.replace("/", "")}`}
+              >
+                <Icon className="w-4 h-4" />
+                {item.label}
               </Link>
             );
           })}

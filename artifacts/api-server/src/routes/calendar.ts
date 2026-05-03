@@ -14,7 +14,13 @@ router.get("/calendar", async (req, res): Promise<void> => {
   const conditions = [eq(calendarEntriesTable.teacherId, teacher.id)];
   if (typeof req.query.term === "string") conditions.push(eq(calendarEntriesTable.term, req.query.term));
   const classIdQ = parseIntParam(req.query.classId);
-  if (classIdQ !== null) conditions.push(eq(calendarEntriesTable.classId, classIdQ));
+  if (classIdQ !== null) {
+    if (!(await ownsClass(teacher.id, classIdQ))) {
+      res.status(403).json({ error: "Invalid classId" });
+      return;
+    }
+    conditions.push(eq(calendarEntriesTable.classId, classIdQ));
+  }
   const rows = await db
     .select()
     .from(calendarEntriesTable)

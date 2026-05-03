@@ -17,7 +17,13 @@ router.get("/lessons", async (req, res): Promise<void> => {
   if (!teacher) return;
   const conditions = [eq(lessonsTable.teacherId, teacher.id)];
   const classIdQ = parseIntParam(req.query.classId);
-  if (classIdQ !== null) conditions.push(eq(lessonsTable.classId, classIdQ));
+  if (classIdQ !== null) {
+    if (!(await ownsClass(teacher.id, classIdQ))) {
+      res.status(403).json({ error: "Invalid classId" });
+      return;
+    }
+    conditions.push(eq(lessonsTable.classId, classIdQ));
+  }
   if (typeof req.query.term === "string") conditions.push(eq(lessonsTable.term, req.query.term));
   const rows = await db
     .select()
