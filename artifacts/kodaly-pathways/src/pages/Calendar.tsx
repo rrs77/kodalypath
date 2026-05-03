@@ -102,11 +102,22 @@ export default function CalendarPage() {
 
 function WeekColumn({ term, week, entries, onDelete, lessons }: { term: string; week: number; entries: CalendarEntry[]; onDelete: (id: number) => void; lessons: { id: number; title: string }[] }) {
   const { setNodeRef, isOver } = useDroppable({ id: `${term}|${week}` });
+  const isEmpty = entries.length === 0;
   return (
-    <Card ref={setNodeRef as any} className={isOver ? "ring-2 ring-primary" : ""}>
-      <CardContent className="p-2 min-h-[160px] space-y-2">
-        <div className="text-xs font-semibold text-muted-foreground">Week {week}</div>
-        {entries.map((e) => <DraggableEntry key={e.id} entry={e} onDelete={onDelete} lessonTitle={lessons.find((l) => l.id === e.lessonId)?.title} />)}
+    <Card
+      ref={setNodeRef as any}
+      className={`${isOver ? "ring-2 ring-primary" : ""} ${isEmpty ? "border-dashed bg-muted/30" : ""} transition-colors`}
+    >
+      <CardContent className="p-2 min-h-[110px] space-y-1.5">
+        <div className="flex items-center justify-between">
+          <div className="text-xs font-semibold text-muted-foreground">Week {week}</div>
+          {!isEmpty && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{entries.length}</span>}
+        </div>
+        {isEmpty ? (
+          <div className="text-[11px] text-muted-foreground/60 text-center py-3 italic">drop or add</div>
+        ) : (
+          entries.map((e) => <DraggableEntry key={e.id} entry={e} onDelete={onDelete} lessonTitle={lessons.find((l) => l.id === e.lessonId)?.title} />)
+        )}
       </CardContent>
     </Card>
   );

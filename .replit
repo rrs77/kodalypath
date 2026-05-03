@@ -1,4 +1,4 @@
-modules = ["nodejs-24", "python-3.11"]
+modules = ["nodejs-24", "python-3.11", "postgresql-16"]
 
 [deployment]
 router = "application"
@@ -36,3 +36,7 @@ externalPort = 3000
 [userenv.shared]
 ENCRYPTION_KEY = "aaa076662bcc2cca6b8632d4232a36d6527b5b3b19f84ea88c137bb75bf759c7"
 EMAIL_HMAC_KEY = "833aeb0750f4f5340bf1ea4084e23885a93a2926a65551ff140cb308ede9048e"
+VITE_CLERK_PUBLISHABLE_KEY = "pk_test_ZGFzaGluZy11cmNoaW4tMTIuY2xlcmsuYWNjb3VudHMuZGV2JA"
+
+[nix]
+channel = "stable-25_05"

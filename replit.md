@@ -6,7 +6,7 @@ Full-stack web app for UK music teachers (EYFS–KS4) to plan Kodály-method les
 - Frontend: React + Vite (`artifacts/kodaly-pathways`), wouter router, Tailwind v4 + shadcn/ui, dnd-kit, abcjs, sonner toasts.
 - Backend: Express + Drizzle/PostgreSQL (`artifacts/api-server`).
 - Contract-first OpenAPI (`lib/api-spec/openapi.yaml`) → Orval-generated React Query hooks (`@workspace/api-client-react`) and Zod validators (`@workspace/api-zod`).
-- Cookie session auth (`kp_session`, httpOnly+secure+sameSite:lax). No password — email + name creates a teacher on first sign-in.
+- **Auth: hybrid Clerk + cookie session.** Real users sign in via Clerk (email+password / Google / etc) — provisioned with `setupClerkWhitelabelAuth()`, keys are `CLERK_*` / `VITE_CLERK_PUBLISHABLE_KEY`. The `/api/auth/demo` route still uses the cookie session (`kp_session`, httpOnly+secure+sameSite:lax) for the one-click demo. `authMiddleware` (api-server/src/lib/auth.ts) tries Clerk first via `getAuth(req)` and upserts a teacher row keyed by `clerkUserId`; falls back to cookie session otherwise. `clerkProxyMiddleware` is mounted at `/api/__clerk` before body parsers; `clerkMiddleware` is mounted before `/api`. Client wraps everything in `<ClerkProvider>` with `/sign-in/*?` and `/sign-up/*?` routes (wildcard `*?` is required for Clerk subroutes / OAuth callbacks). Tailwind v4 must declare `@layer theme, base, clerk, components, utilities` before `@import "tailwindcss"`, and `tailwindcss({ optimize: false })` in `vite.config.ts` keeps Clerk's CSS layers intact in prod.
 - PDF export via pdfkit; resource URL import does best-effort `<title>` scrape.
 
 ## Important contract notes

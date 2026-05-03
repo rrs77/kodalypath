@@ -5,6 +5,9 @@ export const teachersTable = pgTable("teachers", {
   // PII: encrypted at rest (AES-256-GCM). Use `emailHash` for lookups.
   email: text("email").notNull().default(""),
   emailHash: varchar("email_hash", { length: 64 }).notNull().default("").unique(),
+  // Clerk user id for accounts created via Clerk (password / Google / etc).
+  // Demo and legacy email-only teachers leave this null.
+  clerkUserId: varchar("clerk_user_id", { length: 64 }).unique(),
   // PII: encrypted at rest.
   name: text("name").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

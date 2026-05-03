@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Library, Search, ExternalLink, Youtube } from "lucide-react";
+import { Plus, Pencil, Trash2, Library, Search, ExternalLink, Youtube, LayoutGrid, List } from "lucide-react";
 import { KEY_STAGES, TERMS } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -37,6 +37,8 @@ export default function ActivitiesPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Activity | null>(null);
   const [viewing, setViewing] = useState<Activity | null>(null);
+  const [view, setView] = useState<"cards" | "compact">(() => (typeof window !== "undefined" ? (localStorage.getItem("kp.actView") as "cards" | "compact") || "cards" : "cards"));
+  function changeView(v: "cards" | "compact") { setView(v); try { localStorage.setItem("kp.actView", v); } catch { /* ignore */ } }
 
   const create = useCreateActivity();
   const update = useUpdateActivity();
@@ -47,6 +49,27 @@ export default function ActivitiesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold flex items-center gap-2"><Library className="w-6 h-6 text-primary" /> Activities</h1>
+        <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-md border p-0.5 bg-muted/40" role="group" aria-label="View">
+            <Button
+              type="button"
+              variant={view === "cards" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 px-2"
+              onClick={() => changeView("cards")}
+              data-testid="btn-view-cards"
+              aria-pressed={view === "cards"}
+            ><LayoutGrid className="w-4 h-4 mr-1" /> Cards</Button>
+            <Button
+              type="button"
+              variant={view === "compact" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 px-2"
+              onClick={() => changeView("compact")}
+              data-testid="btn-view-compact"
+              aria-pressed={view === "compact"}
+            ><List className="w-4 h-4 mr-1" /> Compact</Button>
+          </div>
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
           <DialogTrigger asChild>
             <Button onClick={() => { setEditing(null); setOpen(true); }} data-testid="button-add-activity"><Plus className="w-4 h-4 mr-1" /> Add activity</Button>
@@ -56,6 +79,7 @@ export default function ActivitiesPage() {
             else create.mutate({ data: v }, { onSuccess: () => { refresh(); setOpen(false); toast.success("Created"); } });
           }} />
         </Dialog>
+        </div>
       </div>
 
       <Card>
@@ -77,42 +101,75 @@ export default function ActivitiesPage() {
       {isLoading ? <p className="text-muted-foreground">Loading…</p> : null}
       {!isLoading && activities.length === 0 && <p className="text-muted-foreground">No activities match these filters.</p>}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {activities.map((a) => (
-          <Card key={a.id} className="hover-elevate cursor-pointer" onClick={() => setViewing(a)} data-testid={`card-activity-${a.id}`}>
-            <CardContent className="p-4 space-y-2">
-              <div className="flex items-start justify-between">
-                <div className="font-semibold">{a.title}</div>
-                <Badge variant="secondary">{a.keyStage}</Badge>
-              </div>
-              <div className="text-xs text-muted-foreground">{a.kodalyFocus}</div>
-              <div className="flex flex-wrap gap-1 items-center">
-                {a.activityType && <Badge variant="outline">{a.activityType}</Badge>}
-                {a.difficulty && <Badge variant="outline">{a.difficulty}</Badge>}
-                {a.term && <Badge variant="outline">{a.term}</Badge>}
+      {!isLoading && activities.length > 0 && (
+        <p className="text-xs text-muted-foreground">{activities.length} {activities.length === 1 ? "activity" : "activities"}</p>
+      )}
+
+      {view === "cards" ? (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {activities.map((a) => (
+            <Card key={a.id} className="hover-elevate cursor-pointer" onClick={() => setViewing(a)} data-testid={`card-activity-${a.id}`}>
+              <CardContent className="p-4 space-y-2">
+                <div className="flex items-start justify-between">
+                  <div className="font-semibold">{a.title}</div>
+                  <Badge variant="secondary">{a.keyStage}</Badge>
+                </div>
+                <div className="text-xs text-muted-foreground">{a.kodalyFocus}</div>
+                <div className="flex flex-wrap gap-1 items-center">
+                  {a.activityType && <Badge variant="outline">{a.activityType}</Badge>}
+                  {a.difficulty && <Badge variant="outline">{a.difficulty}</Badge>}
+                  {a.term && <Badge variant="outline">{a.term}</Badge>}
+                  {a.youtubeLink && (
+                    <Badge variant="secondary" className="gap-1 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
+                      <Youtube className="w-3 h-3" /> Video
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm line-clamp-2">{a.description}</p>
                 {a.youtubeLink && (
-                  <Badge variant="secondary" className="gap-1 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
-                    <Youtube className="w-3 h-3" /> Video
-                  </Badge>
+                  <a
+                    href={a.youtubeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                    data-testid={`link-video-${a.id}`}
+                  >
+                    <Youtube className="w-3.5 h-3.5" /> Watch on YouTube
+                  </a>
                 )}
-              </div>
-              <p className="text-sm line-clamp-2">{a.description}</p>
-              {a.youtubeLink && (
-                <a
-                  href={a.youtubeLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                  data-testid={`link-video-${a.id}`}
-                >
-                  <Youtube className="w-3.5 h-3.5" /> Watch on YouTube
-                </a>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <div className="divide-y">
+            {activities.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => setViewing(a)}
+                className="w-full text-left flex items-center gap-3 px-3 py-2 hover-elevate"
+                data-testid={`row-activity-${a.id}`}
+              >
+                <Badge variant="secondary" className="w-12 justify-center shrink-0 text-[10px]">{a.keyStage}</Badge>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm truncate">{a.title}</div>
+                  <div className="text-xs text-muted-foreground truncate">{a.kodalyFocus}{a.solfaElement ? ` · ${a.solfaElement}` : ""}{a.rhythmElement ? ` · ${a.rhythmElement}` : ""}</div>
+                </div>
+                <div className="hidden md:flex items-center gap-1 shrink-0">
+                  {a.activityType && <Badge variant="outline" className="text-[10px]">{a.activityType}</Badge>}
+                  {a.difficulty && <Badge variant="outline" className="text-[10px]">{a.difficulty}</Badge>}
+                  {a.term && <Badge variant="outline" className="text-[10px]">{a.term}</Badge>}
+                  {a.youtubeLink && <Youtube className="w-3.5 h-3.5 text-red-600" />}
+                  {a.externalLink && <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />}
+                </div>
+              </button>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
         {viewing && (

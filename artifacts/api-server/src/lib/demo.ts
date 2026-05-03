@@ -15,19 +15,78 @@ const DEMO_CLASSES = [
 ] as const;
 
 const DEMO_LESSON_SPECS = [
+  // Autumn 1
   { classIdx: 0, title: "EYFS — pulse & pitch awareness", yearGroup: "Reception", keyStage: "EYFS", term: "Autumn 1" },
   { classIdx: 1, title: "KS1 — introducing ta and ti-ti", yearGroup: "Year 2", keyStage: "KS1", term: "Autumn 1" },
   { classIdx: 2, title: "KS2 — pentatonic singing games", yearGroup: "Year 4", keyStage: "KS2", term: "Autumn 1" },
   { classIdx: 3, title: "Choir — two-part round prep", yearGroup: "Year 6", keyStage: "KS2", term: "Autumn 1" },
+  // Autumn 2
+  { classIdx: 0, title: "EYFS — long & short sounds", yearGroup: "Reception", keyStage: "EYFS", term: "Autumn 2" },
+  { classIdx: 1, title: "KS1 — rest and 4-beat patterns", yearGroup: "Year 2", keyStage: "KS1", term: "Autumn 2" },
   { classIdx: 2, title: "KS2 — rhythm dictation 8-beat", yearGroup: "Year 4", keyStage: "KS2", term: "Autumn 2" },
+  { classIdx: 3, title: "Choir — Christmas concert prep", yearGroup: "Year 6", keyStage: "KS2", term: "Autumn 2" },
+  // Spring 1
+  { classIdx: 0, title: "EYFS — echo singing on so-mi", yearGroup: "Reception", keyStage: "EYFS", term: "Spring 1" },
+  { classIdx: 1, title: "KS1 — adding la (so-mi-la)", yearGroup: "Year 2", keyStage: "KS1", term: "Spring 1" },
+  { classIdx: 2, title: "KS2 — tika-tika introduction", yearGroup: "Year 4", keyStage: "KS2", term: "Spring 1" },
+  { classIdx: 3, title: "Choir — folk-song arrangements", yearGroup: "Year 6", keyStage: "KS2", term: "Spring 1" },
+  // Spring 2
+  { classIdx: 1, title: "KS1 — staff notation intro", yearGroup: "Year 2", keyStage: "KS1", term: "Spring 2" },
+  { classIdx: 2, title: "KS2 — pentatonic improvisation", yearGroup: "Year 4", keyStage: "KS2", term: "Spring 2" },
+  { classIdx: 3, title: "Choir — two-part canon work", yearGroup: "Year 6", keyStage: "KS2", term: "Spring 2" },
+  // Summer 1
+  { classIdx: 0, title: "EYFS — circle games & spiral", yearGroup: "Reception", keyStage: "EYFS", term: "Summer 1" },
+  { classIdx: 2, title: "KS2 — listening: Grieg", yearGroup: "Year 4", keyStage: "KS2", term: "Summer 1" },
+  { classIdx: 3, title: "Choir — summer concert rehearsal", yearGroup: "Year 6", keyStage: "KS2", term: "Summer 1" },
+  // Summer 2
+  { classIdx: 1, title: "KS1 — composing 4-beat rhythms", yearGroup: "Year 2", keyStage: "KS1", term: "Summer 2" },
+  { classIdx: 2, title: "KS2 — composition: ABA pentatonic", yearGroup: "Year 4", keyStage: "KS2", term: "Summer 2" },
 ] as const;
 
+// 5 lessons per term across the 4 demo classes — gives ~30 entries across 6 terms.
+// Lesson indices reference DEMO_LESSON_SPECS above (0-based).
 const DEMO_CALENDAR = [
-  { weekNumber: 1, dayLabel: "Mon", title: "Reception circle time", classIdx: 0, lessonIdx: 0, notes: "Bring scarves for movement warm-up" },
-  { weekNumber: 1, dayLabel: "Tue", title: "Year 2 hall slot", classIdx: 1, lessonIdx: 1, notes: "" },
-  { weekNumber: 1, dayLabel: "Wed", title: "Year 4 music room", classIdx: 2, lessonIdx: 2, notes: "Hand-sign poster on board" },
-  { weekNumber: 1, dayLabel: "Thu", title: "Choir lunchtime", classIdx: 3, lessonIdx: 3, notes: "" },
-  { weekNumber: 2, dayLabel: "Wed", title: "Year 4 — dictation lesson", classIdx: 2, lessonIdx: 4, notes: "Print rhythm cards" },
+  // -------- Autumn 1 --------
+  { term: "Autumn 1", weekNumber: 1, dayLabel: "Mon", title: "Reception circle time", classIdx: 0, lessonIdx: 0, notes: "Bring scarves for movement warm-up" },
+  { term: "Autumn 1", weekNumber: 1, dayLabel: "Tue", title: "Year 2 hall slot", classIdx: 1, lessonIdx: 1, notes: "" },
+  { term: "Autumn 1", weekNumber: 1, dayLabel: "Wed", title: "Year 4 music room", classIdx: 2, lessonIdx: 2, notes: "Hand-sign poster on board" },
+  { term: "Autumn 1", weekNumber: 1, dayLabel: "Thu", title: "Choir lunchtime", classIdx: 3, lessonIdx: 3, notes: "" },
+  { term: "Autumn 1", weekNumber: 2, dayLabel: "Mon", title: "Reception — pulse walk", classIdx: 0, lessonIdx: 0, notes: "Use frame drum" },
+  { term: "Autumn 1", weekNumber: 2, dayLabel: "Wed", title: "Year 4 — review pentatonic songs", classIdx: 2, lessonIdx: 2, notes: "" },
+  { term: "Autumn 1", weekNumber: 3, dayLabel: "Tue", title: "Year 2 — ta and ti-ti consolidation", classIdx: 1, lessonIdx: 1, notes: "Print rhythm cards" },
+  { term: "Autumn 1", weekNumber: 3, dayLabel: "Thu", title: "Choir — round preparation", classIdx: 3, lessonIdx: 3, notes: "" },
+  { term: "Autumn 1", weekNumber: 4, dayLabel: "Wed", title: "Year 4 — pentatonic singing games", classIdx: 2, lessonIdx: 2, notes: "" },
+  { term: "Autumn 1", weekNumber: 5, dayLabel: "Mon", title: "Reception — Bee Bee Bumblebee", classIdx: 0, lessonIdx: 0, notes: "" },
+  { term: "Autumn 1", weekNumber: 6, dayLabel: "Thu", title: "Choir — assembly performance", classIdx: 3, lessonIdx: 3, notes: "Hall booked p4" },
+  // -------- Autumn 2 --------
+  { term: "Autumn 2", weekNumber: 1, dayLabel: "Mon", title: "Reception — long/short sorting", classIdx: 0, lessonIdx: 4, notes: "" },
+  { term: "Autumn 2", weekNumber: 1, dayLabel: "Tue", title: "Year 2 — rest patterns", classIdx: 1, lessonIdx: 5, notes: "" },
+  { term: "Autumn 2", weekNumber: 2, dayLabel: "Wed", title: "Year 4 — dictation lesson", classIdx: 2, lessonIdx: 6, notes: "Print rhythm cards" },
+  { term: "Autumn 2", weekNumber: 2, dayLabel: "Thu", title: "Choir — Christmas pieces", classIdx: 3, lessonIdx: 7, notes: "Two-part Carol arrangement" },
+  { term: "Autumn 2", weekNumber: 3, dayLabel: "Mon", title: "Reception — listening map", classIdx: 0, lessonIdx: 4, notes: "" },
+  { term: "Autumn 2", weekNumber: 4, dayLabel: "Wed", title: "Year 4 — 8-beat dictation continued", classIdx: 2, lessonIdx: 6, notes: "" },
+  { term: "Autumn 2", weekNumber: 5, dayLabel: "Thu", title: "Choir — concert dress rehearsal", classIdx: 3, lessonIdx: 7, notes: "Full hall, 1pm" },
+  // -------- Spring 1 --------
+  { term: "Spring 1", weekNumber: 1, dayLabel: "Mon", title: "Reception — echo singing", classIdx: 0, lessonIdx: 8, notes: "" },
+  { term: "Spring 1", weekNumber: 1, dayLabel: "Tue", title: "Year 2 — adding la", classIdx: 1, lessonIdx: 9, notes: "Hand sign chart" },
+  { term: "Spring 1", weekNumber: 1, dayLabel: "Wed", title: "Year 4 — tika-tika intro", classIdx: 2, lessonIdx: 10, notes: "" },
+  { term: "Spring 1", weekNumber: 2, dayLabel: "Thu", title: "Choir — folk-song arrangement", classIdx: 3, lessonIdx: 11, notes: "" },
+  { term: "Spring 1", weekNumber: 3, dayLabel: "Wed", title: "Year 4 — tika-tika dictation", classIdx: 2, lessonIdx: 10, notes: "Whiteboards" },
+  { term: "Spring 1", weekNumber: 4, dayLabel: "Tue", title: "Year 2 — Snail Snail game", classIdx: 1, lessonIdx: 9, notes: "Open space" },
+  // -------- Spring 2 --------
+  { term: "Spring 2", weekNumber: 1, dayLabel: "Tue", title: "Year 2 — staff notation intro", classIdx: 1, lessonIdx: 12, notes: "Manuscript paper" },
+  { term: "Spring 2", weekNumber: 1, dayLabel: "Wed", title: "Year 4 — improvisation circle", classIdx: 2, lessonIdx: 13, notes: "Pentatonic glockenspiels" },
+  { term: "Spring 2", weekNumber: 2, dayLabel: "Thu", title: "Choir — canon work", classIdx: 3, lessonIdx: 14, notes: "" },
+  { term: "Spring 2", weekNumber: 3, dayLabel: "Wed", title: "Year 4 — listening: Grieg", classIdx: 2, lessonIdx: 13, notes: "Hall of the Mountain King clip" },
+  // -------- Summer 1 --------
+  { term: "Summer 1", weekNumber: 1, dayLabel: "Mon", title: "Reception — spiral game", classIdx: 0, lessonIdx: 15, notes: "Hall booked" },
+  { term: "Summer 1", weekNumber: 1, dayLabel: "Wed", title: "Year 4 — listening map", classIdx: 2, lessonIdx: 16, notes: "" },
+  { term: "Summer 1", weekNumber: 2, dayLabel: "Thu", title: "Choir — summer concert rehearsal", classIdx: 3, lessonIdx: 17, notes: "" },
+  { term: "Summer 1", weekNumber: 3, dayLabel: "Mon", title: "Reception — Pass the Beanbag", classIdx: 0, lessonIdx: 15, notes: "" },
+  // -------- Summer 2 --------
+  { term: "Summer 2", weekNumber: 1, dayLabel: "Tue", title: "Year 2 — composing 4-beat rhythms", classIdx: 1, lessonIdx: 18, notes: "" },
+  { term: "Summer 2", weekNumber: 1, dayLabel: "Wed", title: "Year 4 — ABA pentatonic composition", classIdx: 2, lessonIdx: 19, notes: "" },
+  { term: "Summer 2", weekNumber: 2, dayLabel: "Thu", title: "Choir — end of year showcase", classIdx: 3, lessonIdx: 17, notes: "Parents invited" },
 ] as const;
 
 /**
@@ -102,11 +161,11 @@ export async function ensureDemoTeacher(): Promise<{ id: number; email: string; 
   for (const e of DEMO_CALENDAR) {
     const cls = classes[e.classIdx];
     const lsn = builtLessons[e.lessonIdx];
-    const sig = entrySig("Autumn 1", e.weekNumber, cls?.id ?? null, e.dayLabel);
+    const sig = entrySig(e.term, e.weekNumber, cls?.id ?? null, e.dayLabel);
     if (present.has(sig)) continue;
     await db.insert(calendarEntriesTable).values({
       teacherId: teacher.id,
-      term: e.weekNumber <= 6 ? "Autumn 1" : "Autumn 2",
+      term: e.term,
       weekNumber: e.weekNumber,
       dayLabel: e.dayLabel,
       sortOrder: 0,
@@ -115,6 +174,7 @@ export async function ensureDemoTeacher(): Promise<{ id: number; email: string; 
       title: e.title,
       notes: encrypt(e.notes),
     });
+    present.add(sig);
   }
 
   return { id: teacher.id, email: DEMO_EMAIL, name: DEMO_NAME };

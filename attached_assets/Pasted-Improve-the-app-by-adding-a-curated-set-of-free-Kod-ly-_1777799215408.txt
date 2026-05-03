@@ -1,0 +1,72 @@
+Improve the app by adding a curated set of free Kodály and classroom music resources.
+
+Add website and YouTube links as selectable resources inside the lesson planning/activity system. These should be linked to the most appropriate existing activities, songs, rhythm concepts, pitch concepts, games, and year groups.
+
+Use these resources:
+
+1. Mr. Meehl’s Music
+https://www.youtube.com/@MrMeehlsMusic
+
+2. Kodály Hub
+https://kodalyhub.com
+https://kodalyhub.com/musicbook/songs
+
+3. Beth’s Notes
+https://www.bethsnotesplus.com
+https://www.bethsnotesplus.com/find-songs
+https://www.bethsnotesplus.com/games
+https://www.bethsnotesplus.com/2012/12/circle-games.html
+https://www.bethsnotesplus.com/freebies/free
+
+4. British Kodály Academy useful links
+https://www.kodaly.org.uk/useful-links
+
+5. Kodály Collection / American Folk Song Collection
+https://kodalycollection.org
+
+6. The Rhythm Trainer
+https://www.therhythmtrainer.com
+
+7. NYCOS / Kodály approach resources
+https://www.nycos.co.uk/learn/our-approach/
+
+8. Kodály Hub handbooks and teacher materials
+https://kodalyhub.com/for-teachers/handbooks
+https://kodalyhub.com/publications-articles
+
+9. Beth’s Music Classroom Kodály resources
+https://www.bethsmusicclassroom.com/category/kodaly/
+
+10. Music Matters rhythm tools
+https://musicmattersblog.com/2020/09/25/free-online-rhythm-training-tools/
+
+Implementation requirements:
+
+- Review the existing activity database and lesson planner.
+- Match each resource to the most appropriate activity or concept.
+- Make linked resources selectable when teachers plan lessons.
+- Allow resources to be filtered by:
+  - Year group
+  - Song/game type
+  - Rhythm focus
+  - Pitch focus
+  - Movement/game activity
+  - Listening activity
+  - Teacher CPD/support
+  - External website
+  - YouTube/video resource
+
+- Do not duplicate links already included.
+- Only add a resource where there is a clear, useful match.
+- If a resource cannot be matched confidently, add it to a general “Additional Free Kodály Resources” section instead.
+- Keep the existing app design, structure, transitions, and lesson planning flow.
+- Ensure all links open safely in a new tab.
+- Ensure everything is compatible with Vercel deployment.
+
+After completing the work, provide a clear summary of:
+
+- Which resources were added
+- Which activities were updated
+- Which resources were placed in the general resource section
+- Any links that could not be matched confidently
+- Any issues found or fixed
