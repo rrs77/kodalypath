@@ -10,7 +10,24 @@ export const teachersTable = pgTable("teachers", {
   clerkUserId: varchar("clerk_user_id", { length: 64 }).unique(),
   // PII: encrypted at rest.
   name: text("name").notNull().default(""),
+  // CMS role. "admin" gates the /admin area. First teacher to authenticate
+  // is auto-promoted by the auth middleware if no admin exists yet.
+  role: varchar("role", { length: 16 }).notNull().default("teacher"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Site-wide CMS settings. Single row keyed by id=1; the API layer ensures
+// the row exists on first read. Branding values are public; PUT is admin-only.
+export const siteSettingsTable = pgTable("site_settings", {
+  id: integer("id").primaryKey().default(1),
+  siteName: text("site_name").notNull().default("Kodály Pathways"),
+  tagline: text("tagline").notNull().default("Music lesson planner"),
+  logoUrl: text("logo_url").notNull().default(""),
+  // HSL string like "174 55% 35%" — applied as `--primary` CSS variable.
+  primaryColorHsl: text("primary_color_hsl").notNull().default("174 55% 35%"),
+  footerText: text("footer_text").notNull().default(""),
+  social: jsonb("social").$type<{ twitter?: string; youtube?: string; website?: string }>().notNull().default({}),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const sessionsTable = pgTable("user_sessions", {

@@ -17,15 +17,104 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary Get current logged in teacher
  */
+export const getCurrentUserResponseUserOneRoleDefault = `teacher`;
+
 export const GetCurrentUserResponse = zod.object({
   user: zod.union([
     zod.object({
       id: zod.number(),
       email: zod.string(),
       name: zod.string(),
+      role: zod
+        .enum(["teacher", "admin"])
+        .default(getCurrentUserResponseUserOneRoleDefault),
     }),
     zod.null(),
   ]),
+});
+
+/**
+ * @summary Public site branding/settings (CMS)
+ */
+export const GetSiteSettingsResponse = zod.object({
+  siteName: zod.string(),
+  tagline: zod.string(),
+  logoUrl: zod.string(),
+  primaryColorHsl: zod
+    .string()
+    .describe("HSL string e.g. '174 55% 35%' applied as --primary CSS var"),
+  footerText: zod.string(),
+  social: zod.object({
+    twitter: zod.string().optional(),
+    youtube: zod.string().optional(),
+    website: zod.string().optional(),
+  }),
+});
+
+/**
+ * @summary Update site branding/settings (admin only)
+ */
+export const updateSiteSettingsBodySiteNameMax = 120;
+
+export const updateSiteSettingsBodyTaglineMax = 240;
+
+export const updateSiteSettingsBodyLogoUrlMax = 2048;
+
+export const updateSiteSettingsBodyPrimaryColorHslMax = 64;
+
+export const updateSiteSettingsBodyFooterTextMax = 1000;
+
+export const updateSiteSettingsBodySocialTwitterMax = 2048;
+
+export const updateSiteSettingsBodySocialYoutubeMax = 2048;
+
+export const updateSiteSettingsBodySocialWebsiteMax = 2048;
+
+export const UpdateSiteSettingsBody = zod.object({
+  siteName: zod
+    .string()
+    .min(1)
+    .max(updateSiteSettingsBodySiteNameMax)
+    .optional(),
+  tagline: zod.string().max(updateSiteSettingsBodyTaglineMax).optional(),
+  logoUrl: zod.string().max(updateSiteSettingsBodyLogoUrlMax).optional(),
+  primaryColorHsl: zod
+    .string()
+    .max(updateSiteSettingsBodyPrimaryColorHslMax)
+    .optional()
+    .describe("HSL triple e.g. '174 55% 35%'"),
+  footerText: zod.string().max(updateSiteSettingsBodyFooterTextMax).optional(),
+  social: zod
+    .object({
+      twitter: zod
+        .string()
+        .max(updateSiteSettingsBodySocialTwitterMax)
+        .optional(),
+      youtube: zod
+        .string()
+        .max(updateSiteSettingsBodySocialYoutubeMax)
+        .optional(),
+      website: zod
+        .string()
+        .max(updateSiteSettingsBodySocialWebsiteMax)
+        .optional(),
+    })
+    .optional(),
+});
+
+export const UpdateSiteSettingsResponse = zod.object({
+  siteName: zod.string(),
+  tagline: zod.string(),
+  logoUrl: zod.string(),
+  primaryColorHsl: zod
+    .string()
+    .describe("HSL string e.g. '174 55% 35%' applied as --primary CSS var"),
+  footerText: zod.string(),
+  social: zod.object({
+    twitter: zod.string().optional(),
+    youtube: zod.string().optional(),
+    website: zod.string().optional(),
+  }),
 });
 
 /**
@@ -36,10 +125,13 @@ export const LoginBody = zod.object({
   name: zod.string().optional(),
 });
 
+export const loginResponseRoleDefault = `teacher`;
+
 export const LoginResponse = zod.object({
   id: zod.number(),
   email: zod.string(),
   name: zod.string(),
+  role: zod.enum(["teacher", "admin"]).default(loginResponseRoleDefault),
 });
 
 /**
@@ -52,12 +144,17 @@ export const LogoutResponse = zod.object({
 /**
  * @summary Dashboard overview for the current teacher
  */
+export const getDashboardSummaryResponseTeacherOneRoleDefault = `teacher`;
+
 export const GetDashboardSummaryResponse = zod.object({
   teacher: zod.union([
     zod.object({
       id: zod.number(),
       email: zod.string(),
       name: zod.string(),
+      role: zod
+        .enum(["teacher", "admin"])
+        .default(getDashboardSummaryResponseTeacherOneRoleDefault),
     }),
     zod.null(),
   ]),

@@ -18,6 +18,8 @@ tags:
   - name: resources
   - name: dashboard
   - name: curriculum
+  - name: site
+  - name: admin
 
 paths:
   /healthz:
@@ -43,6 +45,39 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthMeResponse" }
+
+  /site-settings:
+    get:
+      operationId: getSiteSettings
+      tags: [site]
+      summary: Public site branding/settings (CMS)
+      responses:
+        "200":
+          description: Site settings
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SiteSettings" }
+
+  /admin/site-settings:
+    put:
+      operationId: updateSiteSettings
+      tags: [admin]
+      summary: Update site branding/settings (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SiteSettingsUpdate" }
+      responses:
+        "200":
+          description: Updated site settings
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SiteSettings" }
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden — admin role required
 
   /auth/login:
     post:
@@ -681,6 +716,7 @@ components:
         id: { type: integer }
         email: { type: string }
         name: { type: string }
+        role: { type: string, enum: [teacher, admin], default: teacher }
       required: [id, email, name]
 
     AuthMeResponse:
@@ -691,6 +727,37 @@ components:
             - $ref: "#/components/schemas/Teacher"
             - type: "null"
       required: [user]
+
+    SiteSettings:
+      type: object
+      properties:
+        siteName: { type: string }
+        tagline: { type: string }
+        logoUrl: { type: string }
+        primaryColorHsl: { type: string, description: "HSL string e.g. '174 55% 35%' applied as --primary CSS var" }
+        footerText: { type: string }
+        social:
+          type: object
+          properties:
+            twitter: { type: string }
+            youtube: { type: string }
+            website: { type: string }
+      required: [siteName, tagline, logoUrl, primaryColorHsl, footerText, social]
+
+    SiteSettingsUpdate:
+      type: object
+      properties:
+        siteName: { type: string, minLength: 1, maxLength: 120 }
+        tagline: { type: string, maxLength: 240 }
+        logoUrl: { type: string, maxLength: 2048 }
+        primaryColorHsl: { type: string, maxLength: 64, description: "HSL triple e.g. '174 55% 35%'" }
+        footerText: { type: string, maxLength: 1000 }
+        social:
+          type: object
+          properties:
+            twitter: { type: string, maxLength: 2048 }
+            youtube: { type: string, maxLength: 2048 }
+            website: { type: string, maxLength: 2048 }
 
     LoginRequest:
       type: object

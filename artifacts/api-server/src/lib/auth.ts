@@ -1,17 +1,57 @@
 import type { Request, Response, NextFunction } from "express";
 import { randomBytes } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db, teachersTable, sessionsTable } from "@workspace/db";
 import { encrypt, decrypt, emailHash } from "./crypto";
 import { getAuth, clerkClient } from "@clerk/express";
+
+export type TeacherRole = "teacher" | "admin";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      teacher?: { id: number; email: string; name: string };
+      teacher?: { id: number; email: string; name: string; role: TeacherRole };
     }
   }
+}
+
+/**
+ * Decide whether to promote the given teacher to admin.
+ *  1. ADMIN_EMAILS env (comma-separated) — explicit allowlist, takes priority.
+ *  2. Otherwise, if no admin exists yet, promote this teacher (first-user
+ *     bootstrap so a fresh install isn't locked out of /admin).
+ * Idempotent and safe to call on every request.
+ */
+const ADMIN_EMAILS = new Set(
+  (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean),
+);
+async function maybeBootstrapAdmin(
+  teacherId: number,
+  currentRole: string,
+  email: string,
+  via: "clerk" | "cookie",
+): Promise<TeacherRole> {
+  if (currentRole === "admin") return "admin";
+  // SECURITY: only promote on Clerk-authenticated requests. The cookie/demo
+  // path is unverified email-only login and must never grant admin, otherwise
+  // anyone could call /api/auth/login with an allowlisted email and inherit
+  // the role (or claim the first-admin slot on a fresh instance).
+  if (via !== "clerk") return (currentRole as TeacherRole) || "teacher";
+  if (email && ADMIN_EMAILS.has(email.toLowerCase())) {
+    await db.update(teachersTable).set({ role: "admin" }).where(eq(teachersTable.id, teacherId));
+    return "admin";
+  }
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(teachersTable)
+    .where(eq(teachersTable.role, "admin"));
+  if (Number(count) > 0) return (currentRole as TeacherRole) || "teacher";
+  await db.update(teachersTable).set({ role: "admin" }).where(eq(teachersTable.id, teacherId));
+  return "admin";
 }
 
 const COOKIE_NAME = "kp_session";
@@ -36,6 +76,7 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
           id: teachersTable.id,
           email: teachersTable.email,
           name: teachersTable.name,
+          role: teachersTable.role,
         })
         .from(teachersTable)
         .where(eq(teachersTable.clerkUserId, clerkUserId))
@@ -59,7 +100,7 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
             .update(teachersTable)
             .set({ clerkUserId, name: encrypt(cleanName) })
             .where(eq(teachersTable.id, existing.id))
-            .returning({ id: teachersTable.id, email: teachersTable.email, name: teachersTable.name });
+            .returning({ id: teachersTable.id, email: teachersTable.email, name: teachersTable.name, role: teachersTable.role });
         } else {
           [teacher] = await db
             .insert(teachersTable)
@@ -69,15 +110,18 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
               clerkUserId,
               name: encrypt(cleanName),
             })
-            .returning({ id: teachersTable.id, email: teachersTable.email, name: teachersTable.name });
+            .returning({ id: teachersTable.id, email: teachersTable.email, name: teachersTable.name, role: teachersTable.role });
         }
       }
 
       if (teacher) {
+        const decryptedEmail = teacher.email ? decrypt(teacher.email) : "";
+        const role = await maybeBootstrapAdmin(teacher.id, teacher.role, decryptedEmail, "clerk");
         req.teacher = {
           id: teacher.id,
-          email: teacher.email ? decrypt(teacher.email) : "",
+          email: decryptedEmail,
           name: teacher.name ? decrypt(teacher.name) : "",
+          role,
         };
         return next();
       }
@@ -95,13 +139,31 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
       id: teachersTable.id,
       email: teachersTable.email,
       name: teachersTable.name,
+      role: teachersTable.role,
     })
     .from(sessionsTable)
     .innerJoin(teachersTable, eq(sessionsTable.teacherId, teachersTable.id))
     .where(eq(sessionsTable.id, sid))
     .limit(1);
   if (row) {
-    req.teacher = { id: row.id, email: decrypt(row.email), name: decrypt(row.name) };
+    const decryptedEmail = decrypt(row.email);
+    const role = await maybeBootstrapAdmin(row.id, row.role, decryptedEmail, "cookie");
+    req.teacher = { id: row.id, email: decryptedEmail, name: decrypt(row.name), role };
+  }
+  next();
+}
+
+/**
+ * Express middleware: 401 if not signed in, 403 if signed in but not admin.
+ */
+export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  if (!req.teacher) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  if (req.teacher.role !== "admin") {
+    res.status(403).json({ error: "Admin role required" });
+    return;
   }
   next();
 }

@@ -13,14 +13,67 @@ export interface SuccessResponse {
   success: boolean;
 }
 
+export type TeacherRole = (typeof TeacherRole)[keyof typeof TeacherRole];
+
+export const TeacherRole = {
+  teacher: "teacher",
+  admin: "admin",
+} as const;
+
 export interface Teacher {
   id: number;
   email: string;
   name: string;
+  role?: TeacherRole;
 }
 
 export interface AuthMeResponse {
   user: Teacher | null;
+}
+
+export type SiteSettingsSocial = {
+  twitter?: string;
+  youtube?: string;
+  website?: string;
+};
+
+export interface SiteSettings {
+  siteName: string;
+  tagline: string;
+  logoUrl: string;
+  /** HSL string e.g. '174 55% 35%' applied as --primary CSS var */
+  primaryColorHsl: string;
+  footerText: string;
+  social: SiteSettingsSocial;
+}
+
+export type SiteSettingsUpdateSocial = {
+  /** @maxLength 2048 */
+  twitter?: string;
+  /** @maxLength 2048 */
+  youtube?: string;
+  /** @maxLength 2048 */
+  website?: string;
+};
+
+export interface SiteSettingsUpdate {
+  /**
+   * @minLength 1
+   * @maxLength 120
+   */
+  siteName?: string;
+  /** @maxLength 240 */
+  tagline?: string;
+  /** @maxLength 2048 */
+  logoUrl?: string;
+  /**
+   * HSL triple e.g. '174 55% 35%'
+   * @maxLength 64
+   */
+  primaryColorHsl?: string;
+  /** @maxLength 1000 */
+  footerText?: string;
+  social?: SiteSettingsUpdateSocial;
 }
 
 export interface LoginRequest {

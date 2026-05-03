@@ -5,9 +5,11 @@
  * Kodály Pathways API
  * OpenAPI spec version: 0.1.0
  */
+import type { TeacherRole } from "./teacherRole";
 
 export interface Teacher {
   id: number;
   email: string;
   name: string;
+  role?: TeacherRole;
 }

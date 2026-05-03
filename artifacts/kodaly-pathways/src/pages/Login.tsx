@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/react";
-import { getGetCurrentUserQueryKey } from "@workspace/api-client-react";
+import { getGetCurrentUserQueryKey, useGetCurrentUser } from "@workspace/api-client-react";
 import { API_BASE } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -14,12 +14,15 @@ export default function LoginPage() {
   const [, navigate] = useLocation();
   const qc = useQueryClient();
   const { isSignedIn, isLoaded } = useAuth();
+  const { data: meData } = useGetCurrentUser();
   const [demoLoading, setDemoLoading] = useState(false);
 
-  // If a Clerk session is already present, just go to the app.
+  // If a Clerk session is already present OR the server already recognises us
+  // (cookie session, or Clerk session resolved server-side), go to the app.
   useEffect(() => {
     if (isLoaded && isSignedIn) navigate("/dashboard");
-  }, [isLoaded, isSignedIn, navigate]);
+    else if (meData?.user) navigate("/dashboard");
+  }, [isLoaded, isSignedIn, meData?.user, navigate]);
 
   async function tryDemo() {
     setDemoLoading(true);

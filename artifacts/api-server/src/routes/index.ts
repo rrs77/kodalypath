@@ -9,6 +9,7 @@ import lessonsRouter from "./lessons";
 import calendarRouter from "./calendar";
 import resourcesRouter from "./resources";
 import curriculumRouter from "./curriculum";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(lessonsRouter);
 router.use(calendarRouter);
 router.use(resourcesRouter);
 router.use(curriculumRouter);
+router.use(adminRouter);
 
 export default router;

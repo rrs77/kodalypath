@@ -2,10 +2,11 @@ import { Link, useLocation } from "wouter";
 import { ReactNode, useEffect, useState } from "react";
 import {
   LayoutDashboard, GraduationCap, Map, Library, NotebookPen, CalendarDays,
-  Folder, Monitor, Settings, Music, Menu, X,
+  Folder, Monitor, Settings, Music, Menu, X, Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Teacher } from "@workspace/api-client-react";
+import { useSiteSettings } from "@/lib/site-settings";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -22,6 +23,10 @@ const NAV = [
 export function AppLayout({ children, teacher }: { children: ReactNode; teacher: Teacher | null }) {
   const [loc] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const settings = useSiteSettings();
+  const isAdmin = teacher?.role === "admin";
+  const brandName = settings.siteName || "Kodály Pathways";
+  const brandTagline = settings.tagline || "Music lesson planner";
 
   // Close mobile drawer on route change
   useEffect(() => { setMobileOpen(false); }, [loc]);
@@ -42,12 +47,21 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
   const sidebar = (
     <>
       <div className="px-5 py-5 border-b border-sidebar-border flex items-center gap-2">
-        <div className="w-9 h-9 rounded-md bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center shrink-0">
-          <Music className="w-5 h-5" />
-        </div>
+        {settings.logoUrl ? (
+          <img
+            src={settings.logoUrl}
+            alt=""
+            className="w-9 h-9 rounded-md object-contain bg-white shrink-0"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
+        ) : (
+          <div className="w-9 h-9 rounded-md bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center shrink-0">
+            <Music className="w-5 h-5" />
+          </div>
+        )}
         <div className="min-w-0">
-          <div className="font-semibold leading-tight truncate">Kodály Pathways</div>
-          <div className="text-xs opacity-70 truncate">Music lesson planner</div>
+          <div className="font-semibold leading-tight truncate" data-testid="brand-name">{brandName}</div>
+          <div className="text-xs opacity-70 truncate">{brandTagline}</div>
         </div>
       </div>
       <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto" aria-label="Primary">
@@ -71,10 +85,29 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
             </Link>
           );
         })}
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className={cn(
+              "relative flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors hover-elevate",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+              loc.startsWith("/admin") && "kp-nav-active font-medium",
+            )}
+            data-testid="nav-admin"
+          >
+            <Shield className={cn("w-4 h-4", loc.startsWith("/admin") ? "text-sidebar-primary" : "opacity-80")} />
+            Site admin
+          </Link>
+        )}
       </nav>
-      <div className="p-3 border-t border-sidebar-border text-xs">
-        <div className="opacity-70">Signed in as</div>
-        <div className="font-medium truncate" data-testid="text-current-teacher">{teacher?.name || teacher?.email || "—"}</div>
+      <div className="p-3 border-t border-sidebar-border text-xs space-y-1">
+        <div>
+          <div className="opacity-70">Signed in as</div>
+          <div className="font-medium truncate" data-testid="text-current-teacher">{teacher?.name || teacher?.email || "—"}</div>
+        </div>
+        {settings.footerText && (
+          <div className="opacity-60 pt-2 border-t border-sidebar-border/60 mt-2 whitespace-pre-line">{settings.footerText}</div>
+        )}
       </div>
     </>
   );
@@ -127,10 +160,14 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-md bg-primary text-primary-foreground flex items-center justify-center shrink-0">
-              <Music className="w-4 h-4" />
-            </div>
-            <span className="font-semibold truncate">Kodály <span className="italic text-primary">Pathways</span></span>
+            {settings.logoUrl ? (
+              <img src={settings.logoUrl} alt="" className="w-7 h-7 rounded-md object-contain bg-white shrink-0" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+            ) : (
+              <div className="w-7 h-7 rounded-md bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+                <Music className="w-4 h-4" />
+              </div>
+            )}
+            <span className="font-semibold truncate">{brandName}</span>
           </div>
         </header>
 

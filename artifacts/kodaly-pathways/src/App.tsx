@@ -20,7 +20,9 @@ import CalendarPage from "@/pages/Calendar";
 import ResourcesPage from "@/pages/Resources";
 import IWBPage from "@/pages/IWB";
 import SettingsPage from "@/pages/Settings";
+import AdminPage from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
+import { SiteSettingsProvider } from "@/lib/site-settings";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: false, refetchOnWindowFocus: false } },
@@ -175,16 +177,20 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryCacheInvalidator />
-        <TooltipProvider>
-          <Switch>
-            <Route path="/login" component={LoginPage} />
-            <Route path="/sign-in/*?" component={SignInPage} />
-            <Route path="/sign-up/*?" component={SignUpPage} />
-            <Route path="/walkthrough" component={WalkthroughPage} />
-            <Route component={ProtectedRoutes} />
-          </Switch>
-          <SonnerToaster position="top-right" richColors />
-        </TooltipProvider>
+        <SiteSettingsProvider>
+          <TooltipProvider>
+            <Switch>
+              <Route path="/login" component={LoginPage} />
+              <Route path="/sign-in/*?" component={SignInPage} />
+              <Route path="/sign-up/*?" component={SignUpPage} />
+              <Route path="/walkthrough" component={WalkthroughPage} />
+              <Route path="/admin" component={AdminPage} />
+              <Route path="/admin/:rest*" component={AdminPage} />
+              <Route component={ProtectedRoutes} />
+            </Switch>
+            <SonnerToaster position="top-right" richColors />
+          </TooltipProvider>
+        </SiteSettingsProvider>
       </QueryClientProvider>
     </ClerkProvider>
   );
