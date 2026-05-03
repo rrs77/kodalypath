@@ -3,34 +3,1245 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Kodály Pathways API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: pathway
+  - name: activities
+  - name: lessons
+  - name: classes
+  - name: calendar
+  - name: resources
+  - name: dashboard
+  - name: curriculum
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
           content:
             application/json:
+              schema: { $ref: "#/components/schemas/HealthStatus" }
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get current logged in teacher
+      responses:
+        "200":
+          description: Current user (or null)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthMeResponse" }
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Demo login by email (creates teacher if missing)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginRequest" }
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Teacher" }
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout the current session
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Dashboard overview for the current teacher
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardSummary" }
+
+  /pathway/items:
+    get:
+      operationId: listPathwayItems
+      tags: [pathway]
+      summary: List Kodály progression items (default + custom)
+      parameters:
+        - in: query
+          name: keyStage
+          required: false
+          schema: { type: string }
+        - in: query
+          name: strand
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Pathway items
+          content:
+            application/json:
               schema:
-                $ref: "#/components/schemas/HealthStatus"
+                type: array
+                items: { $ref: "#/components/schemas/PathwayItem" }
+    post:
+      operationId: createPathwayItem
+      tags: [pathway]
+      summary: Create a custom pathway item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PathwayItemCreate" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PathwayItem" }
+
+  /pathway/items/{id}:
+    patch:
+      operationId: updatePathwayItem
+      tags: [pathway]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PathwayItemUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PathwayItem" }
+    delete:
+      operationId: deletePathwayItem
+      tags: [pathway]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /activities:
+    get:
+      operationId: listActivities
+      tags: [activities]
+      summary: List activities with filters
+      parameters:
+        - in: query
+          name: keyStage
+          required: false
+          schema: { type: string }
+        - in: query
+          name: ageGroup
+          required: false
+          schema: { type: string }
+        - in: query
+          name: rhythmFocus
+          required: false
+          schema: { type: string }
+        - in: query
+          name: solfaFocus
+          required: false
+          schema: { type: string }
+        - in: query
+          name: activityType
+          required: false
+          schema: { type: string }
+        - in: query
+          name: difficulty
+          required: false
+          schema: { type: string }
+        - in: query
+          name: term
+          required: false
+          schema: { type: string }
+        - in: query
+          name: search
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Activity" }
+    post:
+      operationId: createActivity
+      tags: [activities]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ActivityCreate" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Activity" }
+
+  /activities/{id}:
+    get:
+      operationId: getActivity
+      tags: [activities]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Activity
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Activity" }
+    patch:
+      operationId: updateActivity
+      tags: [activities]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ActivityUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Activity" }
+    delete:
+      operationId: deleteActivity
+      tags: [activities]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /classes:
+    get:
+      operationId: listClasses
+      tags: [classes]
+      responses:
+        "200":
+          description: Classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ClassRecord" }
+    post:
+      operationId: createClass
+      tags: [classes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClassCreate" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClassRecord" }
+
+  /classes/{id}:
+    patch:
+      operationId: updateClass
+      tags: [classes]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClassUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClassRecord" }
+    delete:
+      operationId: deleteClass
+      tags: [classes]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /lessons:
+    get:
+      operationId: listLessons
+      tags: [lessons]
+      parameters:
+        - in: query
+          name: classId
+          required: false
+          schema: { type: integer }
+        - in: query
+          name: term
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Lesson" }
+    post:
+      operationId: createLesson
+      tags: [lessons]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LessonCreate" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Lesson" }
+
+  /lessons/{id}:
+    get:
+      operationId: getLesson
+      tags: [lessons]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Lesson
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Lesson" }
+    patch:
+      operationId: updateLesson
+      tags: [lessons]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LessonUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Lesson" }
+    delete:
+      operationId: deleteLesson
+      tags: [lessons]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /lessons/{id}/duplicate:
+    post:
+      operationId: duplicateLesson
+      tags: [lessons]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DuplicateLessonRequest" }
+      responses:
+        "200":
+          description: Duplicated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Lesson" }
+
+  /lessons/generate:
+    post:
+      operationId: generateLesson
+      tags: [lessons]
+      summary: Generate a lesson plan from inputs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GenerateLessonRequest" }
+      responses:
+        "200":
+          description: Generated lesson
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Lesson" }
+
+  /lessons/{id}/pdf:
+    get:
+      operationId: downloadLessonPdf
+      tags: [lessons]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /calendar:
+    get:
+      operationId: listCalendarEntries
+      tags: [calendar]
+      parameters:
+        - in: query
+          name: term
+          required: false
+          schema: { type: string }
+        - in: query
+          name: classId
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Calendar entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CalendarEntry" }
+    post:
+      operationId: createCalendarEntry
+      tags: [calendar]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CalendarEntryCreate" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CalendarEntry" }
+
+  /calendar/{id}:
+    patch:
+      operationId: updateCalendarEntry
+      tags: [calendar]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CalendarEntryUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CalendarEntry" }
+    delete:
+      operationId: deleteCalendarEntry
+      tags: [calendar]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /calendar/copy-term:
+    post:
+      operationId: copyTerm
+      tags: [calendar]
+      summary: Copy all entries from one term to another
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CopyTermRequest" }
+      responses:
+        "200":
+          description: Copied
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /resources:
+    get:
+      operationId: listResources
+      tags: [resources]
+      parameters:
+        - in: query
+          name: search
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Resource" }
+    post:
+      operationId: createResource
+      tags: [resources]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ResourceCreate" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Resource" }
+
+  /resources/import:
+    post:
+      operationId: importResource
+      tags: [resources]
+      summary: Import a resource from URL (fetches title and suggests metadata)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ImportResourceRequest" }
+      responses:
+        "200":
+          description: Imported (preview, not yet saved)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportResourcePreview" }
+
+  /resources/{id}:
+    patch:
+      operationId: updateResource
+      tags: [resources]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ResourceUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Resource" }
+    delete:
+      operationId: deleteResource
+      tags: [resources]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SuccessResponse" }
+
+  /curriculum/links:
+    get:
+      operationId: listCurriculumLinks
+      tags: [curriculum]
+      parameters:
+        - in: query
+          name: keyStage
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Curriculum links
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CurriculumLink" }
+
 components:
   schemas:
     HealthStatus:
       type: object
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
+      required: [status]
 
+    SuccessResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+      required: [success]
+
+    Teacher:
+      type: object
+      properties:
+        id: { type: integer }
+        email: { type: string }
+        name: { type: string }
+      required: [id, email, name]
+
+    AuthMeResponse:
+      type: object
+      properties:
+        user:
+          oneOf:
+            - $ref: "#/components/schemas/Teacher"
+            - type: "null"
+      required: [user]
+
+    LoginRequest:
+      type: object
+      properties:
+        email: { type: string }
+        name: { type: string }
+      required: [email]
+
+    DashboardSummary:
+      type: object
+      properties:
+        teacher:
+          oneOf:
+            - $ref: "#/components/schemas/Teacher"
+            - type: "null"
+        totals:
+          type: object
+          properties:
+            classes: { type: integer }
+            lessons: { type: integer }
+            activities: { type: integer }
+            resources: { type: integer }
+            calendarEntries: { type: integer }
+          required: [classes, lessons, activities, resources, calendarEntries]
+        recentLessons:
+          type: array
+          items: { $ref: "#/components/schemas/Lesson" }
+        upcoming:
+          type: array
+          items: { $ref: "#/components/schemas/CalendarEntry" }
+        termBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              term: { type: string }
+              count: { type: integer }
+            required: [term, count]
+      required: [teacher, totals, recentLessons, upcoming, termBreakdown]
+
+    PathwayItem:
+      type: object
+      properties:
+        id: { type: integer }
+        keyStage: { type: string }
+        yearGroup: { type: string }
+        strand: { type: string }
+        title: { type: string }
+        description: { type: string }
+        sequenceOrder: { type: integer }
+        isCustom: { type: boolean }
+      required: [id, keyStage, yearGroup, strand, title, description, sequenceOrder, isCustom]
+
+    PathwayItemCreate:
+      type: object
+      properties:
+        keyStage: { type: string }
+        yearGroup: { type: string }
+        strand: { type: string }
+        title: { type: string }
+        description: { type: string }
+        sequenceOrder: { type: integer }
+      required: [keyStage, yearGroup, strand, title, description, sequenceOrder]
+
+    PathwayItemUpdate:
+      type: object
+      properties:
+        keyStage: { type: string }
+        yearGroup: { type: string }
+        strand: { type: string }
+        title: { type: string }
+        description: { type: string }
+        sequenceOrder: { type: integer }
+
+    Activity:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        ageRange: { type: string }
+        keyStage: { type: string }
+        kodalyFocus: { type: string }
+        rhythmElement: { type: string }
+        solfaElement: { type: string }
+        curriculumLink: { type: string }
+        description: { type: string }
+        instructions: { type: string }
+        questions: { type: string }
+        assessmentFocus: { type: string }
+        requiredResources: { type: string }
+        youtubeLink: { type: string }
+        externalLink: { type: string }
+        activityType: { type: string }
+        difficulty: { type: string }
+        term: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+      required:
+        - id
+        - title
+        - ageRange
+        - keyStage
+        - kodalyFocus
+        - rhythmElement
+        - solfaElement
+        - curriculumLink
+        - description
+        - instructions
+        - questions
+        - assessmentFocus
+        - requiredResources
+        - youtubeLink
+        - externalLink
+        - activityType
+        - difficulty
+        - term
+        - tags
+
+    ActivityCreate:
+      type: object
+      properties:
+        title: { type: string }
+        ageRange: { type: string }
+        keyStage: { type: string }
+        kodalyFocus: { type: string }
+        rhythmElement: { type: string }
+        solfaElement: { type: string }
+        curriculumLink: { type: string }
+        description: { type: string }
+        instructions: { type: string }
+        questions: { type: string }
+        assessmentFocus: { type: string }
+        requiredResources: { type: string }
+        youtubeLink: { type: string }
+        externalLink: { type: string }
+        activityType: { type: string }
+        difficulty: { type: string }
+        term: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+      required: [title, keyStage]
+
+    ActivityUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        ageRange: { type: string }
+        keyStage: { type: string }
+        kodalyFocus: { type: string }
+        rhythmElement: { type: string }
+        solfaElement: { type: string }
+        curriculumLink: { type: string }
+        description: { type: string }
+        instructions: { type: string }
+        questions: { type: string }
+        assessmentFocus: { type: string }
+        requiredResources: { type: string }
+        youtubeLink: { type: string }
+        externalLink: { type: string }
+        activityType: { type: string }
+        difficulty: { type: string }
+        term: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+
+    ClassRecord:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        yearGroup: { type: string }
+        keyStage: { type: string }
+        notes: { type: string }
+      required: [id, name, yearGroup, keyStage, notes]
+
+    ClassCreate:
+      type: object
+      properties:
+        name: { type: string }
+        yearGroup: { type: string }
+        keyStage: { type: string }
+        notes: { type: string }
+      required: [name, yearGroup, keyStage]
+
+    ClassUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        yearGroup: { type: string }
+        keyStage: { type: string }
+        notes: { type: string }
+
+    LessonComponent:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        title: { type: string }
+        content: { type: string }
+        durationMinutes: { type: integer }
+        notes: { type: string }
+        activityId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+      required: [id, type, title, content, durationMinutes, notes]
+
+    Lesson:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        yearGroup: { type: string }
+        keyStage: { type: string }
+        term: { type: string }
+        lengthMinutes: { type: integer }
+        kodalyFocus: { type: string }
+        rhythmFocus: { type: string }
+        solfaFocus: { type: string }
+        curriculumObjective: { type: string }
+        learningObjective: { type: string }
+        canStatements:
+          type: array
+          items: { type: string }
+        vocabulary:
+          type: array
+          items: { type: string }
+        priorLearning: { type: string }
+        newLearning: { type: string }
+        assessment: { type: string }
+        differentiation: { type: string }
+        sendAdaptations: { type: string }
+        ealAdaptations: { type: string }
+        teacherQuestions:
+          type: array
+          items: { type: string }
+        pupilResponses:
+          type: array
+          items: { type: string }
+        extension: { type: string }
+        plenary: { type: string }
+        resources:
+          type: array
+          items: { type: string }
+        components:
+          type: array
+          items: { $ref: "#/components/schemas/LessonComponent" }
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        notes: { type: string }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+      required:
+        - id
+        - title
+        - yearGroup
+        - keyStage
+        - term
+        - lengthMinutes
+        - kodalyFocus
+        - rhythmFocus
+        - solfaFocus
+        - curriculumObjective
+        - learningObjective
+        - canStatements
+        - vocabulary
+        - priorLearning
+        - newLearning
+        - assessment
+        - differentiation
+        - sendAdaptations
+        - ealAdaptations
+        - teacherQuestions
+        - pupilResponses
+        - extension
+        - plenary
+        - resources
+        - components
+        - classId
+        - notes
+        - createdAt
+        - updatedAt
+
+    LessonCreate:
+      type: object
+      properties:
+        title: { type: string }
+        yearGroup: { type: string }
+        keyStage: { type: string }
+        term: { type: string }
+        lengthMinutes: { type: integer }
+        kodalyFocus: { type: string }
+        rhythmFocus: { type: string }
+        solfaFocus: { type: string }
+        curriculumObjective: { type: string }
+        learningObjective: { type: string }
+        canStatements:
+          type: array
+          items: { type: string }
+        vocabulary:
+          type: array
+          items: { type: string }
+        priorLearning: { type: string }
+        newLearning: { type: string }
+        assessment: { type: string }
+        differentiation: { type: string }
+        sendAdaptations: { type: string }
+        ealAdaptations: { type: string }
+        teacherQuestions:
+          type: array
+          items: { type: string }
+        pupilResponses:
+          type: array
+          items: { type: string }
+        extension: { type: string }
+        plenary: { type: string }
+        resources:
+          type: array
+          items: { type: string }
+        components:
+          type: array
+          items: { $ref: "#/components/schemas/LessonComponent" }
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        notes: { type: string }
+      required: [title, yearGroup, keyStage]
+
+    LessonUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        yearGroup: { type: string }
+        keyStage: { type: string }
+        term: { type: string }
+        lengthMinutes: { type: integer }
+        kodalyFocus: { type: string }
+        rhythmFocus: { type: string }
+        solfaFocus: { type: string }
+        curriculumObjective: { type: string }
+        learningObjective: { type: string }
+        canStatements:
+          type: array
+          items: { type: string }
+        vocabulary:
+          type: array
+          items: { type: string }
+        priorLearning: { type: string }
+        newLearning: { type: string }
+        assessment: { type: string }
+        differentiation: { type: string }
+        sendAdaptations: { type: string }
+        ealAdaptations: { type: string }
+        teacherQuestions:
+          type: array
+          items: { type: string }
+        pupilResponses:
+          type: array
+          items: { type: string }
+        extension: { type: string }
+        plenary: { type: string }
+        resources:
+          type: array
+          items: { type: string }
+        components:
+          type: array
+          items: { $ref: "#/components/schemas/LessonComponent" }
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        notes: { type: string }
+
+    DuplicateLessonRequest:
+      type: object
+      properties:
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        term: { type: string }
+        title: { type: string }
+
+    GenerateLessonRequest:
+      type: object
+      properties:
+        yearGroup: { type: string }
+        keyStage: { type: string }
+        term: { type: string }
+        lengthMinutes: { type: integer }
+        kodalyFocus: { type: string }
+        rhythmFocus: { type: string }
+        solfaFocus: { type: string }
+        curriculumObjective: { type: string }
+        resources: { type: string }
+        classNotes: { type: string }
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+      required: [yearGroup, keyStage]
+
+    CalendarEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        term: { type: string }
+        weekNumber: { type: integer }
+        dayLabel: { type: string }
+        sortOrder: { type: integer }
+        lessonId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        title: { type: string }
+        notes: { type: string }
+      required: [id, term, weekNumber, dayLabel, sortOrder, lessonId, classId, title, notes]
+
+    CalendarEntryCreate:
+      type: object
+      properties:
+        term: { type: string }
+        weekNumber: { type: integer }
+        dayLabel: { type: string }
+        sortOrder: { type: integer }
+        lessonId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        title: { type: string }
+        notes: { type: string }
+      required: [term, weekNumber]
+
+    CalendarEntryUpdate:
+      type: object
+      properties:
+        term: { type: string }
+        weekNumber: { type: integer }
+        dayLabel: { type: string }
+        sortOrder: { type: integer }
+        lessonId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        classId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+        title: { type: string }
+        notes: { type: string }
+
+    CopyTermRequest:
+      type: object
+      properties:
+        sourceTerm: { type: string }
+        targetTerm: { type: string }
+        targetClassId:
+          oneOf:
+            - { type: integer }
+            - { type: "null" }
+      required: [sourceTerm, targetTerm]
+
+    Resource:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        url: { type: string }
+        sourceType: { type: string }
+        kodalyFocus: { type: string }
+        ageRange: { type: string }
+        keyStage: { type: string }
+        progressionStage: { type: string }
+        notes: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+      required: [id, title, url, sourceType, kodalyFocus, ageRange, keyStage, progressionStage, notes, tags]
+
+    ResourceCreate:
+      type: object
+      properties:
+        title: { type: string }
+        url: { type: string }
+        sourceType: { type: string }
+        kodalyFocus: { type: string }
+        ageRange: { type: string }
+        keyStage: { type: string }
+        progressionStage: { type: string }
+        notes: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+      required: [title, url]
+
+    ResourceUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        url: { type: string }
+        sourceType: { type: string }
+        kodalyFocus: { type: string }
+        ageRange: { type: string }
+        keyStage: { type: string }
+        progressionStage: { type: string }
+        notes: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+
+    ImportResourceRequest:
+      type: object
+      properties:
+        url: { type: string }
+      required: [url]
+
+    ImportResourcePreview:
+      type: object
+      properties:
+        title: { type: string }
+        url: { type: string }
+        sourceType: { type: string }
+        suggestedKodalyFocus: { type: string }
+        suggestedAgeRange: { type: string }
+        suggestedKeyStage: { type: string }
+        suggestedProgressionStage: { type: string }
+        suggestedTags:
+          type: array
+          items: { type: string }
+      required: [title, url, sourceType, suggestedKodalyFocus, suggestedAgeRange, suggestedKeyStage, suggestedProgressionStage, suggestedTags]
+
+    CurriculumLink:
+      type: object
+      properties:
+        id: { type: integer }
+        keyStage: { type: string }
+        framework: { type: string }
+        objective: { type: string }
+        skillArea: { type: string }
+      required: [id, keyStage, framework, objective, skillArea]

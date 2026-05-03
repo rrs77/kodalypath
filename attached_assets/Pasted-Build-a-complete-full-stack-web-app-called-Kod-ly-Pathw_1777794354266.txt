@@ -1,0 +1,342 @@
+Build a complete full-stack web app called “Kodály Pathways” for teaching rhythm, solfa, and notation from EYFS to KS4.
+
+The app should be a complete learning and planning package for music teachers. Teachers must be able to log in, save progress, continue where they left off, create lessons, edit lessons, plan terms, and build custom Kodály learning journeys.
+
+Core requirements:
+
+1. User accounts
+- Teacher login and registration
+- Saved teacher dashboard
+- Continue where teacher left off
+- Save lesson plans, classes, year groups, calendars, custom resources, and edited learning pathways
+
+2. Kodály progression system
+Create a structured Kodály learning pathway covering EYFS, KS1, KS2, KS3, and KS4.
+
+Include progression for:
+- Rhythm: pulse, beat, ta, ti-ti, rest, tika-tika, syncopa, dotted rhythms, compound time, irregular metres
+- Solfa: so-mi, la, do, re, pentatonic, fa, ti, full diatonic scale, modes, chromaticism
+- Inner hearing
+- Aural skills
+- Singing games
+- Hand signs
+- Rhythm dictation
+- Melodic dictation
+- Improvisation
+- Composition
+- Part work and harmony
+
+Teachers must be able to keep the default Kodály pathway or customise it.
+
+3. Drag-and-drop learning journey builder
+Create a visual builder where teachers can drag components from a Kodály activity database into their own pathway.
+
+Components should include:
+- Rhythm activities
+- Solfa activities
+- Singing games
+- Listening tasks
+- Movement activities
+- Composition tasks
+- Notation activities
+- Assessment checkpoints
+- Warm-ups
+- Plenaries
+- Question prompts
+- Vocabulary cards
+- I can statements
+- Online resources
+
+Teachers can reorder, edit, duplicate, delete, and save these components.
+
+4. Curriculum links
+Map lessons and progression to UK music curriculum expectations from EYFS to KS4.
+
+Include:
+- EYFS Expressive Arts and Design
+- National Curriculum Music KS1, KS2, KS3
+- GCSE-style KS4 skills where appropriate
+- Singing, listening, composing, performing, notation, improvisation, and appraisal
+
+Each generated lesson plan should show:
+- Year group
+- Key stage
+- Curriculum links
+- I can statements
+- Vocabulary
+- Prior learning
+- New learning
+- Assessment opportunities
+- Differentiation
+- Resources
+- Step-by-step teaching sequence
+- Teacher questions
+- Pupil responses to listen for
+- Extension tasks
+- Adaptations for SEND/EAL
+
+5. Lesson plan generator
+Create an AI-assisted lesson generator.
+
+Teachers should select:
+- Year group
+- Term
+- Length of lesson
+- Kodály focus
+- Rhythm focus
+- Solfa focus
+- Curriculum objective
+- Resources available
+- Class notes
+
+The app should generate a detailed editable lesson plan.
+
+Lesson structure:
+- Welcome / vocal warm-up
+- Pulse and movement
+- Rhythm focus
+- Solfa focus
+- Song or game
+- Notation task
+- Creative task
+- Reflection / assessment
+- Plenary
+
+6. Calendar and planning
+Create a calendar planner with:
+- Autumn 1
+- Autumn 2
+- Spring 1
+- Spring 2
+- Summer 1
+- Summer 2
+
+Teachers can:
+- Add lessons to calendar
+- Copy previous lessons
+- Copy a full term
+- Copy a full academic year
+- Move lessons by drag and drop
+- Reuse previous lessons for another class or year
+- View past lessons
+- Edit any copied lesson
+
+7. Activity and resource database
+Create a Kodály activity database populated with starter examples.
+
+Each activity should have:
+- Title
+- Age range
+- Key stage
+- Kodály focus
+- Rhythm element
+- Solfa element
+- Curriculum link
+- Description
+- Instructions
+- Questions to ask pupils
+- Assessment focus
+- Required resources
+- Optional YouTube link
+- Optional external website link
+- Tags
+
+Include filters for:
+- Age group
+- Key stage
+- Rhythm focus
+- Solfa focus
+- Activity type
+- Difficulty
+- Term
+- Curriculum area
+
+8. Online resource importing
+Allow teachers to add their own links from:
+- YouTube
+- public websites
+- online notation resources
+- song collections
+- PDF links
+- audio links
+
+The app should intelligently import a resource by:
+- Reading the title
+- Saving the URL
+- Letting the teacher add tags
+- Suggesting possible Kodály focus
+- Suggesting age range
+- Suggesting where it fits in the progression
+- Allowing manual editing
+
+9. Free/open music and notation systems
+Where possible, structure the app to work with existing free/open tools rather than building everything from scratch.
+
+Use or support:
+- ABC notation for simple songs and rhythm patterns
+- VexFlow or OpenSheetMusicDisplay for browser notation rendering
+- MusicXML import where possible
+- YouTube embeds for videos
+- Public-domain song/resource links where legally appropriate
+
+Important: do not scrape copyrighted content. Store links and metadata only unless the content is public domain or user-created.
+
+10. Notation and rhythm tools
+Create interactive tools for:
+- Rhythm flashcards
+- Solfa flashcards
+- Hand sign cards
+- Beat grids
+- Rhythm composition
+- Solfa pattern builder
+- Simple notation display
+- Call-and-response activities
+- Dictation activities
+- Teacher-led IWB mode
+
+11. IWB classroom mode
+Create a large-screen interactive mode for use on an interactive whiteboard.
+
+Features:
+- Big buttons
+- Rhythm cards
+- Solfa cards
+- Beat icons
+- Drag-and-drop rhythm patterns
+- Play / stop buttons where possible
+- Teacher notes hidden or collapsible
+- Full-screen mode
+- Class-friendly visuals
+
+12. Lesson downloads
+Teachers can download lesson plans as:
+- PDF
+- Word document
+- Printable lesson sheet
+- Termly overview
+- Yearly overview
+
+13. Editing
+Every part of every lesson must be editable:
+- Title
+- Learning objective
+- I can statements
+- Vocabulary
+- Curriculum links
+- Activities
+- Questions
+- Resources
+- Timings
+- Differentiation
+- Assessment
+- Notes
+
+14. Suggested data model
+Use a database with tables/models for:
+- Users
+- Classes
+- YearGroups
+- Terms
+- Lessons
+- LessonComponents
+- KodalyProgressionItems
+- Activities
+- Resources
+- CurriculumLinks
+- CalendarEntries
+- CustomPathways
+- ImportedResources
+- Downloads
+
+15. Suggested tech stack
+Use:
+- React or Next.js frontend
+- Tailwind CSS
+- Node/Express or Next.js API routes
+- PostgreSQL or SQLite for development
+- Prisma ORM
+- Authentication
+- Drag-and-drop library such as dnd-kit
+- PDF export
+- VexFlow or OpenSheetMusicDisplay for notation
+- ABC notation support if easier for simple classroom songs
+
+16. Design
+The app should feel professional, clean, and teacher-friendly.
+
+Use:
+- Dashboard layout
+- Sidebar navigation
+- Cards
+- Calendar view
+- Search and filters
+- Drag-and-drop planning
+- Editable lesson templates
+- IWB mode
+- Mobile and tablet responsive design
+
+Main pages:
+- Dashboard
+- My Classes
+- Kodály Pathway
+- Lesson Builder
+- Activity Database
+- Resource Library
+- Calendar Planner
+- Termly Plans
+- Downloads
+- IWB Mode
+- Settings
+
+17. Starter content
+Populate the app with sample Kodály activities and sample lesson plans for:
+- EYFS
+- Year 1
+- Year 2
+- Year 3
+- Year 4
+- Year 5
+- Year 6
+- KS3
+- KS4
+
+Use placeholder public-domain or teacher-created sample material where necessary. Include links as editable resource records.
+
+18. AI features
+Add AI helper buttons for:
+- Generate lesson plan
+- Generate pupil questions
+- Generate I can statements
+- Generate vocabulary
+- Suggest next Kodály step
+- Adapt lesson for SEND
+- Adapt lesson for EAL
+- Create a termly plan
+- Create a yearly progression map
+- Suggest online resources
+- Summarise imported links
+
+Make all AI-generated content editable before saving.
+
+19. Permissions and safety
+Teachers should review all AI-generated plans before use.
+The app should not automatically claim copyright ownership over imported content.
+External resources should be stored as links unless uploaded by the teacher.
+
+20. Final output
+Create a working MVP first, not just mockups.
+
+The MVP must include:
+- Login
+- Dashboard
+- Kodály progression map
+- Lesson builder
+- Activity database
+- Calendar planner
+- Editable lesson plan
+- Resource link importing
+- PDF download
+- Basic notation rendering
+- Sample data
+
+After the MVP works, add advanced features.

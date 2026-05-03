@@ -1,27 +1,33 @@
-# Workspace
+# Kodály Pathways
 
-## Overview
-
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+Full-stack web app for UK music teachers (EYFS–KS4) to plan Kodály-method lessons.
 
 ## Stack
+- Frontend: React + Vite (`artifacts/kodaly-pathways`), wouter router, Tailwind v4 + shadcn/ui, dnd-kit, abcjs, sonner toasts.
+- Backend: Express + Drizzle/PostgreSQL (`artifacts/api-server`).
+- Contract-first OpenAPI (`lib/api-spec/openapi.yaml`) → Orval-generated React Query hooks (`@workspace/api-client-react`) and Zod validators (`@workspace/api-zod`).
+- Cookie session auth (`kp_session`, httpOnly+secure+sameSite:lax). No password — email + name creates a teacher on first sign-in.
+- PDF export via pdfkit; resource URL import does best-effort `<title>` scrape.
 
-- **Monorepo tool**: pnpm workspaces
-- **Node.js version**: 24
-- **Package manager**: pnpm
-- **TypeScript version**: 5.9
-- **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
+## Important contract notes
+- Orval emits Zod request-body schemas as `<Operation>Body` (e.g. `LoginBody`), not `<Operation>Request`. The OpenAPI components are named `*Request`, but server imports must use `LoginBody` from `@workspace/api-zod`.
+- Generated React Query hooks return T directly (data, not `{ data }`).
+- `dup.mutate({ id, data: {} })` — the duplicate endpoint's body is required even though optional in spec.
 
-## Key Commands
+## Build externals
+`artifacts/api-server/build.mjs` externalises `pdfkit`, `fontkit`, `brotli` (PDF generation). Adding them to the bundle pulls in `@swc/helpers` cjs which fails at runtime.
 
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- `pnpm --filter @workspace/api-server run dev` — run API server locally
+## Routes (frontend)
+`/login`, `/dashboard`, `/classes`, `/pathway`, `/activities`, `/lesson-builder`, `/lessons/:id`, `/calendar`, `/resources`, `/iwb`, `/settings`. Wouter base = `import.meta.env.BASE_URL` so all paths are prefix-aware.
 
-See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+## Theme
+Warm musical palette: sage/teal primary on parchment cream (light mode); deep slate with same accents (dark mode). All HSL vars defined in `src/index.css`.
+
+## DB seed
+On boot, `seedIfEmpty()` populates ~85 default Kodály pathway items, 12 sample activities, and 21 NC curriculum links (all with teacherId NULL = global). Re-running is a no-op.
+
+## Generation
+`POST /api/lessons/generate` uses `lib/lesson-generator.ts` to produce a 7-component lesson sequence (warm-up → rhythm → solfa → singing game → notation → creative → plenary) with durations normalised to the requested length.
+
+## Workflow restart
+After installing pkg deps or editing build externals, restart `artifacts/api-server: API Server`. After frontend changes, Vite HMR is sufficient.
