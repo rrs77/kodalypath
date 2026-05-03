@@ -2,7 +2,7 @@ import { useState } from "react";
 import { DndContext, closestCenter, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Pencil, Copy, Trash2, Plus, Library } from "lucide-react";
+import { GripVertical, Pencil, Copy, Trash2, Plus, Library, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,16 +51,24 @@ export function LessonComponentList({ components, onChange }: { components: Less
   }
 
   function addFromActivity(a: Activity) {
+    const contentParts = [a.description, a.instructions].filter(Boolean);
+    if (a.youtubeLink) contentParts.push(`Video: ${a.youtubeLink}`);
     onChange([...components, {
       id: newId(),
       type: a.activityType || "Other",
       title: a.title,
-      content: [a.description, a.instructions].filter(Boolean).join("\n\n"),
+      content: contentParts.join("\n\n"),
       durationMinutes: 8,
       notes: a.assessmentFocus || "",
       activityId: a.id,
     }]);
     setAdding(false);
+  }
+
+  function extractYouTube(text: string | undefined): string | null {
+    if (!text) return null;
+    const m = text.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=[\w-]+|youtu\.be\/[\w-]+)[^\s)]*/);
+    return m ? m[0] : null;
   }
 
   const editing = components.find((c) => c.id === editingId) ?? null;
@@ -71,6 +79,7 @@ export function LessonComponentList({ components, onChange }: { components: Less
         <SortableContext items={components.map((c) => c.id)} strategy={verticalListSortingStrategy}>
           {components.map((c, i) => (
             <SortableRow key={c.id} c={c}
+              videoUrl={extractYouTube(c.content)}
               onEdit={() => setEditingId(c.id)}
               onDuplicate={() => duplicate(i)}
               onRemove={() => remove(i)}
@@ -117,7 +126,7 @@ export function LessonComponentList({ components, onChange }: { components: Less
   );
 }
 
-function SortableRow({ c, onEdit, onDuplicate, onRemove, onDurationChange }: { c: LessonComponent; onEdit: () => void; onDuplicate: () => void; onRemove: () => void; onDurationChange: (n: number) => void }) {
+function SortableRow({ c, videoUrl, onEdit, onDuplicate, onRemove, onDurationChange }: { c: LessonComponent; videoUrl: string | null; onEdit: () => void; onDuplicate: () => void; onRemove: () => void; onDurationChange: (n: number) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: c.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
   return (
@@ -129,6 +138,18 @@ function SortableRow({ c, onEdit, onDuplicate, onRemove, onDurationChange }: { c
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="secondary">{c.type}</Badge>
               <span className="font-medium truncate">{c.title}</span>
+              {videoUrl && (
+                <a
+                  href={videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  data-testid={`link-component-video-${c.id}`}
+                >
+                  <Youtube className="w-3.5 h-3.5" /> Watch
+                </a>
+              )}
             </div>
             {c.content && <p className="text-xs text-muted-foreground line-clamp-2 mt-1 whitespace-pre-wrap">{c.content}</p>}
           </div>
@@ -147,27 +168,45 @@ function SortableRow({ c, onEdit, onDuplicate, onRemove, onDurationChange }: { c
 
 function ActivityPicker({ onPick }: { onPick: (a: Activity) => void }) {
   const [search, setSearch] = useState("");
+  const [videoOnly, setVideoOnly] = useState(false);
   const { data: activities = [] } = useListActivities(search ? { search } : undefined);
+  const filtered = videoOnly ? activities.filter((a) => !!a.youtubeLink) : activities;
   return (
     <Tabs defaultValue="all">
-      <TabsList><TabsTrigger value="all">All</TabsTrigger></TabsList>
+      <TabsList>
+        <TabsTrigger value="all" onClick={() => setVideoOnly(false)}>All</TabsTrigger>
+        <TabsTrigger value="video" onClick={() => setVideoOnly(true)}>With video</TabsTrigger>
+      </TabsList>
       <TabsContent value="all" className="mt-3">
         <Input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} className="mb-2" />
-        <div className="space-y-1.5 max-h-[55vh] overflow-y-auto">
-          {activities.map((a) => (
-            <Card key={a.id} className="hover-elevate cursor-pointer" onClick={() => onPick(a)}>
-              <CardContent className="p-3">
-                <div className="flex items-center justify-between">
-                  <div className="font-medium">{a.title}</div>
-                  <Badge variant="secondary">{a.keyStage}</Badge>
-                </div>
-                <div className="text-xs text-muted-foreground">{a.kodalyFocus}</div>
-              </CardContent>
-            </Card>
-          ))}
-          {activities.length === 0 && <p className="text-sm text-muted-foreground">No matching activities.</p>}
-        </div>
+        <ActivityList activities={filtered} onPick={onPick} />
+      </TabsContent>
+      <TabsContent value="video" className="mt-3">
+        <Input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} className="mb-2" />
+        <ActivityList activities={filtered} onPick={onPick} />
       </TabsContent>
     </Tabs>
+  );
+}
+
+function ActivityList({ activities, onPick }: { activities: Activity[]; onPick: (a: Activity) => void }) {
+  if (activities.length === 0) return <p className="text-sm text-muted-foreground">No matching activities.</p>;
+  return (
+    <div className="space-y-1.5 max-h-[55vh] overflow-y-auto">
+      {activities.map((a) => (
+        <Card key={a.id} className="hover-elevate cursor-pointer" onClick={() => onPick(a)} data-testid={`picker-activity-${a.id}`}>
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="font-medium truncate">{a.title}</div>
+              <div className="flex items-center gap-1 shrink-0">
+                {a.youtubeLink && <Youtube className="w-4 h-4 text-red-600" />}
+                <Badge variant="secondary">{a.keyStage}</Badge>
+              </div>
+            </div>
+            <div className="text-xs text-muted-foreground">{a.kodalyFocus}</div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }

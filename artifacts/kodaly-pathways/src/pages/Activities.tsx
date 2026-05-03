@@ -86,12 +86,29 @@ export default function ActivitiesPage() {
                 <Badge variant="secondary">{a.keyStage}</Badge>
               </div>
               <div className="text-xs text-muted-foreground">{a.kodalyFocus}</div>
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-1 items-center">
                 {a.activityType && <Badge variant="outline">{a.activityType}</Badge>}
                 {a.difficulty && <Badge variant="outline">{a.difficulty}</Badge>}
                 {a.term && <Badge variant="outline">{a.term}</Badge>}
+                {a.youtubeLink && (
+                  <Badge variant="secondary" className="gap-1 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
+                    <Youtube className="w-3 h-3" /> Video
+                  </Badge>
+                )}
               </div>
               <p className="text-sm line-clamp-2">{a.description}</p>
+              {a.youtubeLink && (
+                <a
+                  href={a.youtubeLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  data-testid={`link-video-${a.id}`}
+                >
+                  <Youtube className="w-3.5 h-3.5" /> Watch on YouTube
+                </a>
+              )}
             </CardContent>
           </Card>
         ))}
