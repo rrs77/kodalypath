@@ -1,0 +1,167 @@
+Act as a senior product designer, UX auditor, frontend engineer, and conversion-focused web/app reviewer.
+
+I want you to perform the next stage of improvement for this app/website by applying common, high-impact UI/UX, usability, accessibility, and polish improvements across the entire product.
+
+Be meticulous. Do not only make surface-level changes.
+
+Your job is to inspect the existing interface, identify common weaknesses, and improve them directly in the codebase while preserving all current functionality.
+
+Focus on these common improvement areas:
+
+1. Visual consistency
+- Standardise spacing, padding, margins, and gaps.
+- Make cards, buttons, forms, headings, navigation, and modals feel like part of one design system.
+- Use consistent border radius, shadows, borders, background colours, and hover states.
+- Remove visual clutter and unnecessary decoration.
+- Make the app feel intentional, calm, and professional.
+
+2. Layout and hierarchy
+- Improve page structure and content grouping.
+- Make the most important actions and information visually prominent.
+- Use stronger heading hierarchy.
+- Improve alignment across sections.
+- Ensure pages do not feel cramped, uneven, or randomly spaced.
+- Add clear sections where content currently feels mixed together.
+
+3. Typography
+- Improve font sizing, line height, text contrast, and font weight usage.
+- Make headings, labels, helper text, metadata, buttons, and body copy consistent.
+- Avoid oversized or undersized text.
+- Improve readability on mobile and desktop.
+
+4. Buttons and calls to action
+- Make primary, secondary, destructive, and subtle actions visually distinct.
+- Ensure important buttons stand out.
+- Add clear hover, focus, disabled, and active states.
+- Make button sizing and spacing consistent.
+- Avoid too many competing primary actions on one screen.
+
+5. Forms and inputs
+- Improve labels, placeholders, helper text, validation messages, and spacing.
+- Make forms easier to scan and complete.
+- Ensure error states are clear and helpful.
+- Improve checkbox, radio, select, textarea, and input styling.
+- Make forms work well on mobile.
+
+6. Navigation
+- Improve header, sidebar, tabs, breadcrumbs, menus, and footer where relevant.
+- Make the current location obvious.
+- Improve hover and active states.
+- Ensure navigation is easy to use on mobile.
+- Remove ambiguity from labels where possible.
+
+7. Cards, tables, and lists
+- Improve spacing, alignment, borders, and shadows.
+- Make list items and cards easier to scan.
+- Improve table readability with better spacing, alignment, headers, and empty states.
+- Make dense information feel organised, not overwhelming.
+
+8. Empty, loading, and error states
+- Add or improve empty states with helpful messages and next actions.
+- Add polished loading states or skeletons where appropriate.
+- Improve error states so they are clear, calm, and useful.
+- Avoid blank or confusing screens.
+
+9. Responsiveness
+Test and improve the app at:
+- Mobile width
+- Tablet width
+- Laptop width
+- Large desktop width
+
+Fix:
+- Horizontal overflow
+- Cramped layouts
+- Broken grids
+- Poor stacking
+- Unreadable text
+- Buttons too small to tap
+- Navigation problems
+- Tables or content that do not adapt well
+
+10. Accessibility
+Improve:
+- Colour contrast
+- Keyboard focus states
+- Semantic HTML
+- ARIA labels where needed
+- Button and link clarity
+- Form label associations
+- Touch target sizes
+- Reduced motion support where animations exist
+
+11. Animation and interaction polish
+Add subtle, professional animations only where useful:
+- Hover transitions
+- Button feedback
+- Card lift or shadow transitions
+- Modal transitions
+- Dropdown/accordion transitions
+- Page or section fade-ins
+- Loading skeletons
+
+Avoid excessive, slow, distracting, bouncy, or gimmicky animations.
+
+12. Copy and microcopy
+Improve unclear UI text where safe:
+- Button labels
+- Empty state text
+- Error messages
+- Form helper text
+- Section headings
+- Tooltips
+- Navigation labels
+
+Keep copy concise, friendly, and professional.
+
+13. Professional polish
+Look for anything that makes the app feel unfinished:
+- Inconsistent spacing
+- Misaligned icons
+- Weak contrast
+- Awkward whitespace
+- Uneven card heights
+- Poor mobile layout
+- Inconsistent icons
+- Weak hover states
+- Cluttered sections
+- Generic-looking components
+- Unclear primary actions
+- Missing feedback after user actions
+
+Fix these carefully.
+
+Rules:
+- Preserve existing functionality.
+- Do not remove features.
+- Do not break routing, forms, authentication, APIs, state management, or existing business logic.
+- Do not rewrite the entire app unless absolutely necessary.
+- Prefer targeted, high-quality improvements.
+- Keep the code clean, maintainable, and consistent with the existing stack.
+- Reuse existing components where sensible.
+- If a design system or component library exists, improve and extend it rather than creating disconnected styles.
+
+Workflow:
+1. Run and inspect the app.
+2. Explore all major pages and user flows.
+3. Take screenshots before changes where useful.
+4. Identify the most common UI/UX issues.
+5. Apply improvements across the app, not just one page.
+6. Test desktop, tablet, and mobile layouts.
+7. Check for console errors.
+8. Verify all important interactions still work.
+9. Take after screenshots where useful.
+10. Summarise the improvements made.
+
+Final quality target:
+The app/website should feel:
+- More professional
+- More balanced
+- More consistent
+- Easier to use
+- More attractive
+- More responsive
+- More accessible
+- More production-ready
+
+Deliver the completed improvements directly in the codebase, then provide a concise summary of what changed and any remaining recommendations.

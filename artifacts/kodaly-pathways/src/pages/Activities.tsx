@@ -47,8 +47,14 @@ export default function ActivitiesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold flex items-center gap-2"><Library className="w-6 h-6 text-primary" /> Activities</h1>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="kp-page-icon"><Library className="w-5 h-5" /></div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Activities</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">Browse, filter and add Kodály-aligned activities.</p>
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           <div className="inline-flex rounded-md border p-0.5 bg-muted/40" role="group" aria-label="View">
             <Button
@@ -108,7 +114,7 @@ export default function ActivitiesPage() {
       {view === "cards" ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
           {activities.map((a) => (
-            <Card key={a.id} className="hover-elevate cursor-pointer" onClick={() => setViewing(a)} data-testid={`card-activity-${a.id}`}>
+            <Card key={a.id} className="kp-card-hover cursor-pointer" onClick={() => setViewing(a)} data-testid={`card-activity-${a.id}`}>
               <CardContent className="p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="font-semibold">{a.title}</div>

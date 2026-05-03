@@ -42,12 +42,12 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm hover-elevate",
-                  active && "bg-sidebar-accent text-sidebar-accent-foreground",
+                  "relative flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors hover-elevate",
+                  active && "kp-nav-active font-medium",
                 )}
                 data-testid={`nav-${item.href.replace("/", "")}`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className={cn("w-4 h-4 transition-colors", active ? "text-sidebar-primary" : "opacity-80")} />
                 {item.label}
               </Link>
             );
@@ -59,7 +59,7 @@ export function AppLayout({ children, teacher }: { children: ReactNode; teacher:
         </div>
       </aside>
       <main className="flex-1 min-w-0 overflow-auto">
-        <div className="max-w-7xl mx-auto p-6 lg:p-8">{children}</div>
+        <div key={loc} className="max-w-7xl mx-auto p-6 lg:p-8 page-enter">{children}</div>
       </main>
     </div>
   );

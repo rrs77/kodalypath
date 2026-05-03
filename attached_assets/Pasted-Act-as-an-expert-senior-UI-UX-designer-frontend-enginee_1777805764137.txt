@@ -1,0 +1,140 @@
+Act as an expert senior UI/UX designer, frontend engineer, visual designer, and QA reviewer.
+
+Your task is to thoroughly inspect the current application UI, explore every screen, interaction, layout, component, and user flow, then improve the site so it looks highly professional, polished, balanced, attractive, and production-ready.
+
+This is not a quick styling pass. Be meticulous.
+
+Core goals:
+- Make the UI look premium, modern, clean, and trustworthy.
+- Improve layout balance, spacing, alignment, typography, hierarchy, responsiveness, and visual consistency.
+- Ensure every page feels intentionally designed, not randomly assembled.
+- Add tasteful, occasional animations where appropriate, without making the app feel gimmicky or distracting.
+- Preserve existing functionality unless something is clearly broken.
+- Do not remove features.
+- Do not make unnecessary architectural rewrites.
+- Focus on design quality, usability, and polish.
+
+Process:
+
+1. Explore the entire app
+- Run the app.
+- Visit every page, route, modal, form, menu, dashboard, card, table, empty state, loading state, and error state you can access.
+- Interact with buttons, dropdowns, inputs, tabs, sidebars, navigation, filters, accordions, and any dynamic UI.
+- Take screenshots of the current UI as you go.
+- Use screenshots to judge design quality, layout problems, visual inconsistencies, awkward spacing, poor hierarchy, and responsiveness issues.
+
+2. Audit the design carefully
+Evaluate:
+- Overall visual impression
+- Layout structure
+- Page composition
+- Spacing and padding
+- Typography scale
+- Font weight usage
+- Colour palette
+- Contrast and accessibility
+- Alignment
+- Component consistency
+- Button styles
+- Card design
+- Navigation clarity
+- Mobile responsiveness
+- Empty/loading/error states
+- Form usability
+- Visual hierarchy
+- Animation opportunities
+- Professional polish
+
+3. Improve the UI globally
+Make thoughtful improvements across the entire app:
+- Create a consistent spacing system.
+- Improve margins, padding, gaps, and section rhythm.
+- Refine typography: headings, subheadings, body text, labels, metadata.
+- Improve buttons, cards, containers, badges, inputs, dropdowns, modals, and navigation.
+- Make pages feel cohesive and visually balanced.
+- Use consistent border radius, shadows, borders, and background treatments.
+- Ensure the app looks good on desktop, tablet, and mobile.
+- Make sure important content is visually prominent.
+- Reduce clutter.
+- Improve scanability.
+- Make the interface feel calm, confident, and professional.
+
+4. Add tasteful animations
+Add subtle animations only where they improve feel and clarity:
+- Page or section fade-ins
+- Gentle hover states
+- Button transitions
+- Card lift or shadow transitions
+- Modal entrance animations
+- Loading skeletons
+- Smooth accordion/dropdown transitions
+- Small micro-interactions for important actions
+
+Avoid:
+- Excessive movement
+- Distracting animations
+- Slow transitions
+- Bouncy/cartoonish effects unless the product style clearly supports it
+
+5. Improve responsiveness
+Check and fix layouts at:
+- Mobile width
+- Tablet width
+- Laptop width
+- Large desktop width
+
+Make sure:
+- Nothing overflows horizontally.
+- Text remains readable.
+- Cards stack cleanly.
+- Navigation works well on small screens.
+- Forms are easy to use.
+- Tables or grids adapt gracefully.
+- Spacing remains balanced.
+
+6. Preserve functionality
+Before changing code, understand how the current app works.
+Do not break:
+- Routing
+- State management
+- Forms
+- Data loading
+- Authentication
+- Existing business logic
+- Existing APIs
+- User interactions
+
+7. Quality bar
+The final UI should feel like a professionally designed SaaS/product website or polished web app.
+
+It should be:
+- Clean
+- Modern
+- Elegant
+- Consistent
+- Balanced
+- Responsive
+- Accessible
+- Smooth
+- Visually appealing
+- Production-ready
+
+8. Final checks
+After making changes:
+- Run the app again.
+- Revisit all major screens.
+- Take new screenshots.
+- Compare before and after.
+- Fix any remaining layout, spacing, visual, or responsiveness issues.
+- Check for console errors.
+- Check for broken interactions.
+- Ensure the design feels cohesive across the entire app.
+
+Deliverables:
+- Apply the improvements directly in the codebase.
+- Keep changes focused and sensible.
+- Briefly summarize what was improved.
+- Mention any remaining issues you noticed but could not safely fix.
+
+Important:
+Be extremely thorough. Do not stop after improving only the homepage. The goal is to inspect and polish the entire UI so the whole site feels professional, well-balanced, attractive, and carefully designed.

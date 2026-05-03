@@ -41,8 +41,14 @@ export default function PathwayPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold flex items-center gap-2"><Map className="w-6 h-6 text-primary" /> Kodály pathway</h1>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="kp-page-icon"><Map className="w-5 h-5" /></div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Kodály pathway</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">A sequenced journey through pitch, rhythm, and singing.</p>
+          </div>
+        </div>
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
           <DialogTrigger asChild>
             <Button onClick={() => { setEditing(null); setOpen(true); }} data-testid="button-add-pathway"><Plus className="w-4 h-4 mr-1" /> Add custom step</Button>

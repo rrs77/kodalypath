@@ -12,7 +12,13 @@ export default function SettingsPage() {
   const logout = useLogout();
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold flex items-center gap-2"><Settings className="w-6 h-6 text-primary" /> Settings</h1>
+      <div className="flex items-center gap-3">
+        <div className="kp-page-icon"><Settings className="w-5 h-5" /></div>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">Account preferences and session.</p>
+        </div>
+      </div>
       <Card>
         <CardHeader><CardTitle>Account</CardTitle></CardHeader>
         <CardContent className="space-y-3">

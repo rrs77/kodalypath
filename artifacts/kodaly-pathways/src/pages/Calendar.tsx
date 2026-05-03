@@ -62,8 +62,14 @@ export default function CalendarPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold flex items-center gap-2"><CalendarDays className="w-6 h-6 text-primary" /> Calendar</h1>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="kp-page-icon"><CalendarDays className="w-5 h-5" /></div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Calendar</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">Plan your year — drag entries between weeks.</p>
+          </div>
+        </div>
         <div className="flex gap-2">
           <Dialog open={copyOpen} onOpenChange={setCopyOpen}>
             <DialogTrigger asChild><Button variant="outline"><Copy className="w-4 h-4 mr-1" /> Copy term</Button></DialogTrigger>

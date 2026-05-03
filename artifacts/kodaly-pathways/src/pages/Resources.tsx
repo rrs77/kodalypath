@@ -32,8 +32,14 @@ export default function ResourcesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold flex items-center gap-2"><Folder className="w-6 h-6 text-primary" /> Resources</h1>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="kp-page-icon"><Folder className="w-5 h-5" /></div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Resources</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">Curated links, scores and recordings — yours and shared defaults.</p>
+          </div>
+        </div>
         <div className="flex gap-2">
           <Dialog open={importOpen} onOpenChange={setImportOpen}>
             <DialogTrigger asChild><Button variant="outline" data-testid="button-import"><Download className="w-4 h-4 mr-1" /> Import from URL</Button></DialogTrigger>
@@ -63,7 +69,7 @@ export default function ResourcesPage() {
       {resources.length === 0 && <p className="text-muted-foreground">No resources yet — add one or import a URL.</p>}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {resources.map((r) => (
-          <Card key={r.id} data-testid={`card-resource-${r.id}`}>
+          <Card key={r.id} className="kp-card-hover" data-testid={`card-resource-${r.id}`}>
             <CardContent className="p-4 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="font-semibold">{r.title}</div>

@@ -29,8 +29,14 @@ export default function ClassesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold flex items-center gap-2"><GraduationCap className="w-6 h-6 text-primary" /> Classes</h1>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="kp-page-icon"><GraduationCap className="w-5 h-5" /></div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Classes</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">Manage the groups you teach this year.</p>
+          </div>
+        </div>
         <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
           <DialogTrigger asChild>
             <Button onClick={() => { setEditing(null); setOpen(true); }} data-testid="button-add-class"><Plus className="w-4 h-4 mr-1" /> Add class</Button>
@@ -54,7 +60,7 @@ export default function ClassesPage() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {classes.map((c) => (
-          <Card key={c.id} data-testid={`card-class-${c.id}`}>
+          <Card key={c.id} className="kp-card-hover" data-testid={`card-class-${c.id}`}>
             <CardContent className="p-4 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div>

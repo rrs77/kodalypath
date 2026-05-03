@@ -56,7 +56,13 @@ export default function LessonBuilderPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold flex items-center gap-2"><NotebookPen className="w-6 h-6 text-primary" /> Lessons</h1>
+      <div className="flex items-center gap-3">
+        <div className="kp-page-icon"><NotebookPen className="w-5 h-5" /></div>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Lessons</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">Generate a Kodály lesson plan or browse what you've built.</p>
+        </div>
+      </div>
       <Tabs defaultValue="generate">
         <TabsList>
           <TabsTrigger value="generate" data-testid="tab-generate"><Sparkles className="w-4 h-4 mr-1" />Generate</TabsTrigger>
