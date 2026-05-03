@@ -1,0 +1,32 @@
+# Replit-only files
+.replit
+.replitignore
+.local/
+.agents/
+.cache/
+.upm/
+
+# Unrelated artifacts (mockup sandbox is dev-only)
+artifacts/mockup-sandbox/
+
+# Scratch / scrape data committed during development
+attached_assets/
+*.html
+extracted.txt
+ids.txt
+initial_data.json
+parse_youtube.py
+text.txt
+titles.txt
+unique_ids.txt
+videos_js.txt
+featured.html
+playlists.html
+videos.html
+
+# Node / build leftovers
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+.DS_Store

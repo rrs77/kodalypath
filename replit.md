@@ -29,6 +29,9 @@ On boot, `seedIfEmpty()` populates ~85 default Kodály pathway items, 12 sample 
 ## Generation
 `POST /api/lessons/generate` uses `lib/lesson-generator.ts` to produce a 7-component lesson sequence (warm-up → rhythm → solfa → singing game → notation → creative → plenary) with durations normalised to the requested length.
 
+## Vercel deployment
+The repo is deployable to Vercel as a single project (static frontend + Express API as one Node serverless function). See `VERCEL.md` for env vars and steps. Key files: `vercel.json`, `api/index.ts` (function entry), `artifacts/api-server/src/handler.ts` (serverless-friendly Express export with lazy-memoised seed/PII migration), `.vercelignore`. The api-server build now emits `dist/index.mjs` (Replit, listens) **and** `dist/handler.mjs` (Vercel, just exports the app). Vite config defaults `BASE_PATH=/` and `PORT=5173` so `vite build` runs without Replit env vars.
+
 ## Workflow restart
 After installing pkg deps or editing build externals, restart `artifacts/api-server: API Server`. After frontend changes, Vite HMR is sufficient.
 
