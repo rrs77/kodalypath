@@ -5,6 +5,7 @@ import { Toaster as SonnerToaster } from "sonner";
 import { useGetCurrentUser } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/AppLayout";
 import LoginPage from "@/pages/Login";
+import WalkthroughPage from "@/pages/Walkthrough";
 import DashboardPage from "@/pages/Dashboard";
 import ClassesPage from "@/pages/Classes";
 import PathwayPage from "@/pages/Pathway";
@@ -52,6 +53,7 @@ function App() {
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <Switch>
             <Route path="/login" component={LoginPage} />
+            <Route path="/walkthrough" component={WalkthroughPage} />
             <Route component={ProtectedRoutes} />
           </Switch>
         </WouterRouter>

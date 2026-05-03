@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLogin, getGetCurrentUserQueryKey } from "@workspace/api-client-react";
 import { Input } from "@/components/ui/input";
@@ -59,10 +59,10 @@ export default function LoginPage() {
       {/* Right form panel */}
       <div className="relative flex flex-col px-6 py-10 md:px-16 md:py-14">
         <div className="absolute top-6 right-6 text-sm">
-          <a href="#" className="inline-flex items-center gap-1.5 text-primary hover:underline" data-testid="link-walkthrough">
+          <Link href="/walkthrough" className="inline-flex items-center gap-1.5 text-primary hover:underline" data-testid="link-walkthrough">
             <BookOpen className="w-4 h-4" />
             Feature walkthrough
-          </a>
+          </Link>
         </div>
 
         <div className="m-auto w-full max-w-sm">
