@@ -4,6 +4,7 @@ import { db, calendarEntriesTable } from "@workspace/db";
 import { requireAuth } from "../lib/auth";
 import { serializeCalendarEntry } from "./dashboard";
 import { ownsClass, ownsLesson, parseIntParam } from "../lib/ownership";
+import { encrypt } from "../lib/crypto";
 
 const router: IRouter = Router();
 
@@ -45,7 +46,7 @@ router.post("/calendar", async (req, res): Promise<void> => {
       lessonId: typeof b.lessonId === "number" ? b.lessonId : null,
       classId: typeof b.classId === "number" ? b.classId : null,
       title: String(b.title ?? ""),
-      notes: String(b.notes ?? ""),
+      notes: encrypt(String(b.notes ?? "")),
     })
     .returning();
   res.json(serializeCalendarEntry(row));
@@ -65,9 +66,10 @@ router.patch("/calendar/:id", async (req, res): Promise<void> => {
     return;
   }
   const update: Record<string, unknown> = {};
-  for (const k of ["term", "dayLabel", "title", "notes"] as const) {
+  for (const k of ["term", "dayLabel", "title"] as const) {
     if (typeof b[k] === "string") update[k] = b[k];
   }
+  if (typeof b.notes === "string") update.notes = encrypt(b.notes);
   if (typeof b.weekNumber === "number") update.weekNumber = b.weekNumber;
   if (typeof b.sortOrder === "number") update.sortOrder = b.sortOrder;
   if (b.lessonId === null || typeof b.lessonId === "number") update.lessonId = b.lessonId;
@@ -132,7 +134,7 @@ router.post("/calendar/copy-term", async (req, res): Promise<void> => {
       lessonId: e.lessonId,
       classId: typeof b.targetClassId === "number" ? b.targetClassId : e.classId,
       title: e.title,
-      notes: e.notes,
+      notes: e.notes, // already-stored ciphertext is copied as-is
     })),
   );
   res.json({ success: true });

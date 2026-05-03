@@ -6,6 +6,9 @@ import { generateLessonPlan } from "../lib/lesson-generator";
 import { streamLessonPdf } from "../lib/pdf";
 import { serializeLesson } from "./dashboard";
 import { ownsClass, parseIntParam } from "../lib/ownership";
+import { encrypt } from "../lib/crypto";
+
+const ENCRYPTED_LESSON_FIELDS = new Set(["notes", "differentiation", "sendAdaptations", "ealAdaptations"]);
 
 const router: IRouter = Router();
 
@@ -55,11 +58,15 @@ router.post("/lessons/generate", async (req, res): Promise<void> => {
     res.status(403).json({ error: "Invalid classId" });
     return;
   }
-  const generated = generateLessonPlan(b);
+  const generated = generateLessonPlan(b) as Record<string, unknown>;
+  // Encrypt PII fields produced by the generator before persisting.
+  for (const f of ENCRYPTED_LESSON_FIELDS) {
+    if (typeof generated[f] === "string") generated[f] = encrypt(generated[f] as string);
+  }
   const [row] = await db
     .insert(lessonsTable)
     .values({
-      ...generated,
+      ...(generated as any),
       teacherId: teacher.id,
       classId: typeof b.classId === "number" ? b.classId : null,
     })
@@ -178,8 +185,11 @@ function buildLessonValues(teacherId: number, b: any, partial = false): any {
     "differentiation","sendAdaptations","ealAdaptations","extension","plenary","notes",
   ];
   for (const k of stringFields) {
-    if (typeof b[k] === "string") v[k] = b[k];
-    else if (!partial) v[k] = "";
+    if (typeof b[k] === "string") {
+      v[k] = ENCRYPTED_LESSON_FIELDS.has(k) ? encrypt(b[k]) : b[k];
+    } else if (!partial) {
+      v[k] = "";
+    }
   }
   if (typeof b.lengthMinutes === "number") v.lengthMinutes = b.lengthMinutes;
   else if (!partial) v.lengthMinutes = 45;

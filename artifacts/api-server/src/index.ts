@@ -1,6 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { seedIfEmpty } from "./lib/seed";
+import { encryptExistingPII } from "./lib/encrypt-existing";
 
 const rawPort = process.env["PORT"];
 
@@ -16,15 +17,27 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-seedIfEmpty().catch((err) => {
-  logger.error({ err }, "Seed failed");
-});
-
-app.listen(port, (err) => {
-  if (err) {
-    logger.error({ err }, "Error listening on port");
+async function bootstrap(): Promise<void> {
+  // Run PII migration before accepting traffic — auth lookup depends on
+  // email_hash being populated for existing teachers.
+  try {
+    await encryptExistingPII();
+  } catch (err) {
+    logger.error({ err }, "PII encryption migration failed; refusing to start");
     process.exit(1);
   }
+  try {
+    await seedIfEmpty();
+  } catch (err) {
+    logger.error({ err }, "Seed failed");
+  }
+  app.listen(port, (err) => {
+    if (err) {
+      logger.error({ err }, "Error listening on port");
+      process.exit(1);
+    }
+    logger.info({ port }, "Server listening");
+  });
+}
 
-  logger.info({ port }, "Server listening");
-});
+bootstrap();

@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { randomBytes } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db, teachersTable, sessionsTable } from "@workspace/db";
+import { encrypt, decrypt, emailHash } from "./crypto";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -29,7 +30,7 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
     .where(eq(sessionsTable.id, sid))
     .limit(1);
   if (row) {
-    req.teacher = row;
+    req.teacher = { id: row.id, email: decrypt(row.email), name: decrypt(row.name) };
   }
   next();
 }
@@ -41,24 +42,32 @@ export async function loginAndSetCookie(
 ): Promise<{ id: number; email: string; name: string }> {
   const cleanEmail = email.trim().toLowerCase();
   const cleanName = (name ?? "").trim() || cleanEmail.split("@")[0];
+  const hash = emailHash(cleanEmail);
 
   let [teacher] = await db
     .select()
     .from(teachersTable)
-    .where(eq(teachersTable.email, cleanEmail))
+    .where(eq(teachersTable.emailHash, hash))
     .limit(1);
 
   if (!teacher) {
     [teacher] = await db
       .insert(teachersTable)
-      .values({ email: cleanEmail, name: cleanName })
+      .values({
+        email: encrypt(cleanEmail),
+        emailHash: hash,
+        name: encrypt(cleanName),
+      })
       .returning();
-  } else if (teacher.name !== cleanName && cleanName) {
-    [teacher] = await db
-      .update(teachersTable)
-      .set({ name: cleanName })
-      .where(eq(teachersTable.id, teacher.id))
-      .returning();
+  } else {
+    const currentName = decrypt(teacher.name);
+    if (currentName !== cleanName && cleanName) {
+      [teacher] = await db
+        .update(teachersTable)
+        .set({ name: encrypt(cleanName) })
+        .where(eq(teachersTable.id, teacher.id))
+        .returning();
+    }
   }
 
   const sid = randomBytes(32).toString("hex");
@@ -72,7 +81,7 @@ export async function loginAndSetCookie(
     path: "/",
   });
 
-  return { id: teacher.id, email: teacher.email, name: teacher.name };
+  return { id: teacher.id, email: cleanEmail, name: decrypt(teacher.name) };
 }
 
 export async function logoutAndClearCookie(req: Request, res: Response): Promise<void> {

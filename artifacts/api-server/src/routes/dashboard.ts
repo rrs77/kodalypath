@@ -9,6 +9,7 @@ import {
   calendarEntriesTable,
 } from "@workspace/db";
 import { requireAuth } from "../lib/auth";
+import { decrypt } from "../lib/crypto";
 
 const router: IRouter = Router();
 
@@ -76,6 +77,10 @@ router.get("/dashboard/summary", async (req, res): Promise<void> => {
 function serializeLesson(l: typeof lessonsTable.$inferSelect) {
   return {
     ...l,
+    notes: decrypt(l.notes),
+    differentiation: decrypt(l.differentiation),
+    sendAdaptations: decrypt(l.sendAdaptations),
+    ealAdaptations: decrypt(l.ealAdaptations),
     classId: l.classId ?? null,
     createdAt: l.createdAt.toISOString(),
     updatedAt: l.updatedAt.toISOString(),
@@ -83,7 +88,12 @@ function serializeLesson(l: typeof lessonsTable.$inferSelect) {
 }
 
 function serializeCalendarEntry(e: typeof calendarEntriesTable.$inferSelect) {
-  return { ...e, lessonId: e.lessonId ?? null, classId: e.classId ?? null };
+  return {
+    ...e,
+    notes: decrypt(e.notes),
+    lessonId: e.lessonId ?? null,
+    classId: e.classId ?? null,
+  };
 }
 
 export default router;

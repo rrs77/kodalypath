@@ -31,3 +31,20 @@ On boot, `seedIfEmpty()` populates ~85 default Kodály pathway items, 12 sample 
 
 ## Workflow restart
 After installing pkg deps or editing build externals, restart `artifacts/api-server: API Server`. After frontend changes, Vite HMR is sufficient.
+
+## PII encryption at rest
+All personal information is AES-256-GCM encrypted in the database. Helpers live in `artifacts/api-server/src/lib/crypto.ts` (`encrypt`, `decrypt`, `emailHash`). Ciphertext is prefixed `enc:v1:` so migration is idempotent and detectable.
+
+Encrypted columns:
+- `teachers.email`, `teachers.name`
+- `classes.name`, `classes.notes`
+- `lessons.notes`, `lessons.differentiation`, `lessons.send_adaptations`, `lessons.eal_adaptations`
+- `calendar_entries.notes`
+
+Email lookup uses a separate deterministic `teachers.email_hash` column (HMAC-SHA256, unique). Login flow: `loginAndSetCookie` in `lib/auth.ts` looks up by `emailHash(cleanEmail)`, decrypts name/email for the response.
+
+Two env vars are required (32-byte hex each, persisted as shared env vars): `ENCRYPTION_KEY`, `EMAIL_HMAC_KEY`. Loss = unrecoverable PII, so do NOT delete or rotate without a planned re-encryption pass.
+
+Boot-time migration `lib/encrypt-existing.ts` runs alongside `seedIfEmpty()` and encrypts any plaintext PII rows it finds (only rows missing the `enc:v1:` prefix are touched).
+
+Out-of-scope (deliberately plaintext): activities, pathway items, curriculum links, resources — these are public/curriculum content and need to remain searchable by `ilike`. Lesson `components` JSONB is also plaintext for now (it primarily references activities; sensitive notes belong on the top-level `lesson.notes`/SEND/EAL fields).

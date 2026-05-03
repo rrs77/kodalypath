@@ -2,7 +2,10 @@ import { pgTable, serial, text, integer, timestamp, jsonb, varchar } from "drizz
 
 export const teachersTable = pgTable("teachers", {
   id: serial("id").primaryKey(),
-  email: varchar("email", { length: 320 }).notNull().unique(),
+  // PII: encrypted at rest (AES-256-GCM). Use `emailHash` for lookups.
+  email: text("email").notNull().default(""),
+  emailHash: varchar("email_hash", { length: 64 }).notNull().default("").unique(),
+  // PII: encrypted at rest.
   name: text("name").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

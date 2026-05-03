@@ -2,8 +2,15 @@ import { Router, type IRouter } from "express";
 import { and, eq } from "drizzle-orm";
 import { db, classesTable } from "@workspace/db";
 import { requireAuth } from "../lib/auth";
+import { encrypt, decrypt } from "../lib/crypto";
 
 const router: IRouter = Router();
+
+type ClassRow = typeof classesTable.$inferSelect;
+
+function serializeClass(c: ClassRow): ClassRow {
+  return { ...c, name: decrypt(c.name), notes: decrypt(c.notes) };
+}
 
 router.get("/classes", async (req, res): Promise<void> => {
   const teacher = requireAuth(req, res);
@@ -11,9 +18,10 @@ router.get("/classes", async (req, res): Promise<void> => {
   const rows = await db
     .select()
     .from(classesTable)
-    .where(eq(classesTable.teacherId, teacher.id))
-    .orderBy(classesTable.name);
-  res.json(rows);
+    .where(eq(classesTable.teacherId, teacher.id));
+  const decrypted = rows.map(serializeClass);
+  decrypted.sort((a, b) => a.name.localeCompare(b.name));
+  res.json(decrypted);
 });
 
 router.post("/classes", async (req, res): Promise<void> => {
@@ -28,13 +36,13 @@ router.post("/classes", async (req, res): Promise<void> => {
     .insert(classesTable)
     .values({
       teacherId: teacher.id,
-      name: String(b.name),
+      name: encrypt(String(b.name)),
       yearGroup: String(b.yearGroup ?? ""),
       keyStage: String(b.keyStage ?? ""),
-      notes: String(b.notes ?? ""),
+      notes: encrypt(String(b.notes ?? "")),
     })
     .returning();
-  res.json(row);
+  res.json(serializeClass(row));
 });
 
 router.patch("/classes/:id", async (req, res): Promise<void> => {
@@ -43,9 +51,10 @@ router.patch("/classes/:id", async (req, res): Promise<void> => {
   const id = parseInt(String(req.params.id), 10);
   const b = req.body ?? {};
   const update: Record<string, unknown> = {};
-  for (const k of ["name", "yearGroup", "keyStage", "notes"] as const) {
-    if (typeof b[k] === "string") update[k] = b[k];
-  }
+  if (typeof b.name === "string") update.name = encrypt(b.name);
+  if (typeof b.notes === "string") update.notes = encrypt(b.notes);
+  if (typeof b.yearGroup === "string") update.yearGroup = b.yearGroup;
+  if (typeof b.keyStage === "string") update.keyStage = b.keyStage;
   const [row] = await db
     .update(classesTable)
     .set(update)
@@ -55,7 +64,7 @@ router.patch("/classes/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Not found" });
     return;
   }
-  res.json(row);
+  res.json(serializeClass(row));
 });
 
 router.delete("/classes/:id", async (req, res): Promise<void> => {
